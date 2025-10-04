@@ -1,16 +1,33 @@
 ---
-title: "First post"
-description: "Lorem ipsum dolor sit amet"
-pubDate: "Jul 08 2022"
+title: "Bible Salt"
+description: "To the salt of the Earth"
+pubDate: "Oct 04 2025"
 heroImage: "/blog-placeholder-3.jpg"
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+The sources specifically indicate that **salt** had a known use in the formation of covenants within the context of the Old Testament.
 
-Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.
+### Salt Used in Forming Covenants
 
-Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+In the larger context of biblical instruction and practice, salt is referenced directly in relation to establishing or confirming covenants:
 
-Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.
+*   Salt was used **"in forming covenants"**.
+*   The reference supporting this historical use points to the book of Leviticus (Leviticus 2:13).
+*   A "covenant of salt" is mentioned in the context of the dedication of the priesthood to God (Numbers 18:19).
+*   The concept of the **"covenant of salt"** also appears in connection with the covenant established with David's dynasty (2 Chronicles 13:5).
 
-Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+### The Larger Context of Salt
+
+Beyond its role in covenants, the sources mention other functions and symbolic uses of salt, often emphasizing its positive, enduring, or protective qualities:
+
+**1. Purification and Preservation:**
+Salt was used for **"cleansing and preservation from decay"**. This use is referenced in Ezekiel 16:4.
+
+**2. Flavor and Purpose:**
+Salt was used for **flavor** (Job 6:6; Mark 9:50). Jesus drew on this common understanding to instruct his disciples:
+*   He declared to his followers, **"You are the salt of the earth"**.
+*   This statement emphasizes that the disciples' lives should have a **"profoundly positive effects on the world around them"**.
+*   Jesus gave a corresponding **warning** about maintaining this role: if salt has **"lost its flavor,"** it is considered **"worthless"** and will be **"thrown out and trampled under foot"**. This warns disciples against doing anything that might **"jeopardize that positive impact"**.
+
+**3. Maintaining Integrity (Metaphorical Application):**
+In the broader teachings of Jesus, the preservation property of salt is linked to the conduct required of his followers, who are called to a surpassing righteousness. The requirement for his disciples is to exhibit behavior that conforms to God’s will.
