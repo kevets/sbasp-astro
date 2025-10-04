@@ -2,7 +2,7 @@
 title: "Bible Salt"
 description: "To the salt of the Earth"
 pubDate: "Oct 04 2025"
-heroImage: "/blog-placeholder-3.jpg"
+heroImage: "/blog-biblesalt.jpg"
 ---
 
 The sources specifically indicate that **salt** had a known use in the formation of covenants within the context of the Old Testament.
