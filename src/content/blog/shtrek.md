@@ -149,7 +149,7 @@ Symbolic arrival at the holy site. The physical trek is complete; the spiritual 
 Conceptual Goal: The "Last Mile" challenges the pilgrim to name their final commitment—be it Unity, Empathy, Sacrifice, or Forgiveness—the principle that bridges the final divide.
 
 
-
+"/blog-shtrek2.jpg"
 
 
 III. End-to-End Overview
