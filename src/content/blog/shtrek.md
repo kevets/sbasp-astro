@@ -149,8 +149,9 @@ Symbolic arrival at the holy site. The physical trek is complete; the spiritual 
 Conceptual Goal: The "Last Mile" challenges the pilgrim to name their final commitment—be it Unity, Empathy, Sacrifice, or Forgiveness—the principle that bridges the final divide.
 
 
-"/blog-shtrek2.jpg"
-
 
 III. End-to-End Overview
 The 'Shtrek' is a 99-mile path that spans from the desert beginnings of the Umayyad caliphate to the spiritual heart of the Abrahamic faiths. It is defined by its dramatic contrast in environments: from the arid eastern plains, through the central rocky hills, down into the lowest point on earth (the rift valley), and finally the strenuous, symbolic climb into the Judean highlands. The total physical distance is 98 miles, with the 99th mile serving as the essential, non-physical step to complete the pilgrimage.
+
+
+<img src="/blog-shtrek2.jpg">
