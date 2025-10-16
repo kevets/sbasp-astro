@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
+const primalEmbedUrl = "https://primal.net/e/nevent1qqsxwm05dg2j2e4dwt3pxq4u6eud8tz7z0kmv3gayhlashzdpc8xtrc0auvcc";
 
 <!doctype html>
 <html lang="en">
@@ -28,7 +29,20 @@ This docu-show serves as a snapshot of a specific day, by compiling a daily news
 			</ul>
 			<h2>Upcoming special reports</h2>
 				<li>NAGSR7 - Functional Ecology</li>
-				<li>NAGSR8 - Green Energy Gut Check</li> https://primal.net/e/nevent1qqsxwm05dg2j2e4dwt3pxq4u6eud8tz7z0kmv3gayhlashzdpc8xtrc0auvcc
+				<li>NAGSR8 - Green Energy Gut Check</li> 
+
+        <!-- EMBED -->
+        <div class="aspect-[4/5] bg-gray-50">
+          <iframe
+            src={primalEmbedUrl}
+            title="Nostr Post on Primal"
+            class="w-full h-full"
+            style="border:0;"
+            loading="lazy"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+          ></iframe>
+        </div>
+
 				<li>University of Chicago Press funding and history</li>
 				<li>Center for Internet Security guidelines update / Microsoft Security settings catch-up</li>
 			<h2>Most recent episode</h2>
