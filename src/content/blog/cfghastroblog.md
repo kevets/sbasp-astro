@@ -2,7 +2,7 @@
 title: "Freeblogging in 2025"
 description: "Dentralized Creation Environment (DECREE) using Astro framework, Github and Cloudflare to make a great basic site"
 pubDate: "Oct 21 2025"
-heroImage: "/blog-placeholder.jpg"
+heroImage: "/blog-placeholder-3.jpg"
 ---
 
 Web hosting is easy!
