@@ -40,11 +40,6 @@ This source provides an in-depth analysis of the numbers 76 and 67, exploring th
 Beyond math:  
 • **1967**: The Summer of Love year—hippies, Beatles' *Sgt. Pepper*, and the dawn of modern counterculture.  
 • **Sports**: Jersey number for legends like baseball's Jim Kaat (1967 Cy Young winner) or basketball's LaMelo Ball (who popularized the "67" meme in 2025 slang for "nah" or dismissal, from a viral rap track).  
-• **Pop Culture**: Featured in *The Simpsons* (Homer's IQ dips to 67 in one episode) and as a nod in sci-fi (like *2001: A Space Odyssey*'s year of shooting).  
+• **Pop Culture**: Featured in *The Simpsons* (Homer's IQ dips to 67 in one episode) and as a nod in sci-fi (like *2001: A Space Odyssey*'s year of shooting).
 
-  <iframe
-    src="https://primal.net/e/nevent1qqsq56r8jqcegcjfdesl4na9phxh4graht7t9y7zulx6y3ltdr6fewssf0ad2"
-    title="Mathematically Speaking with 76"
-    loading="lazy"
-    allowfullscreen>
-  </iframe>
+**VIDEO:** [Mathematically Speaking with 76](https://primal.net/e/nevent1qqsq56r8jqcegcjfdesl4na9phxh4graht7t9y7zulx6y3ltdr6fewssf0ad2)
