@@ -12,3 +12,13 @@ server infrastructre running the latest software with industry standandard sourc
 running Apache.
 
 Enter Cloudflare worker pages, ASTRO site framework, and GitHub for serviceable path to fully proxied and lightweight static page creation.
+
+Want to customize your HTML and have an iframe embedded? Sure!
+
+		  <h3>SOCIAL PREVIEW Value for value options</h3>
+  <iframe
+    src="https://primal.net/e/naddr1qvzqqqr4gupzqaf4zg3xgl9xyn8pvjch5gjkd2nhf53ldqzd2kla9a3ssug0mhx5qq09vctvw4jj6en0wgkhvctvw4jj6mmsw35k7mnn94k8vmmtwdssx60hue"
+    title="Value for value options"
+    loading="lazy"
+    allowfullscreen>
+  </iframe>
