@@ -15,7 +15,8 @@ This source provides an in-depth analysis of the numbers 76 and 67, exploring th
 • In geometry, there are 76 unique compact uniform hyperbolic honeycombs in three dimensions, derived from Wythoff constructions. That's some serious spatial swagger for a humble integer.  
 **Scientifically Dense**  
 • 76 is the atomic number of osmium, the densest naturally occurring element on Earth (22.59 g/cm³). If numbers had weight, 76 would sink your ship.  
-• [Osmium \- Wikipedia](https://en.wikipedia.org/wiki/Osmium)![][image1]  
+• [Osmium \- Wikipedia](https://en.wikipedia.org/wiki/Osmium)
+<img src="/blog-76.jpg">
 **Culturally Iconic**  
 • "Seventy-six Trombones" is the legendary opener from the 1957 musical *The Music Man*, leading a parade of brass that still gets stuck in your head. It's the ultimate earworm anthem for marching bands everywhere.  
 • The Philadelphia 76ers NBA team is named after 1776, the year of the Declaration of Independence—76 for short, symbolizing American grit (and occasional heartbreak for Philly fans).  
@@ -35,7 +36,8 @@ This source provides an in-depth analysis of the numbers 76 and 67, exploring th
 • **Sum of Consecutive Primes**: 67 \= 2 \+ 3 \+ 5 \+ 7 \+ 11 \+ 13 \+ 26? Wait, more elegantly: it's the sum of the first 6 primes minus 1 or other combos, but notably, 67 \= 31 \+ 36? Actually, one fun one: 67 is the sum of three consecutive primes: 17 \+ 19 \+ 31 \= 67\.  
 • **Other Fun Facts**:  
 • Atomic number of Holmium (Ho), a rare-earth metal used in magnets.  
-• Because holmium strongly absorbs [neutrons](https://en.wikipedia.org/wiki/Neutrons), it is also used as a [burnable poison](https://en.wikipedia.org/wiki/Burnable%5Fpoison) in [nuclear reactors](https://en.wikipedia.org/wiki/Nuclear%5Freactors).![][image2]  
+• Because holmium strongly absorbs [neutrons](https://en.wikipedia.org/wiki/Neutrons), it is also used as a [burnable poison](https://en.wikipedia.org/wiki/Burnable%5Fpoison) in [nuclear reactors](https://en.wikipedia.org/wiki/Nuclear%5Freactors).
+<img src="/blog-67.jpg">
 • 67% is that sweet spot for a "passing" grade in some systems—enough to celebrate without overachieving.  
 **Cultural Cool Factor**  
 Beyond math:  
