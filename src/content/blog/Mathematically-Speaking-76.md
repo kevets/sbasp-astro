@@ -1,3 +1,10 @@
+---
+title: "Mathematically Speaking with 76"
+description: "in-depth analysis of the numbers 76 and 67, exploring their multifaceted significance across mathematics, science, and culture"
+pubDate: "Oct 23 2025"
+heroImage: "/blog-placeholder-5.jpg"
+---
+
 # Mathematically Speaking with 76
 
 Source guide  
