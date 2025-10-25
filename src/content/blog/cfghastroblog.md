@@ -31,6 +31,6 @@ Want to customize your HTML and have an iframe embedded in a post Sure!
 [*] Create free cloudflare account
 [*] Create free namecheap account
 [*] Register domain in namecheap (or Cloudflare)
-[*] Configure 
-
-
+[*] Navigate to ASTRO framework repository example and use 'Deploy to Cloudflare' button
+[**] Link example - desired template: https://github.com/cloudflare/templates/tree/main/astro-blog-starter-template
+[**] https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/astro-blog-starter-template
