@@ -13,7 +13,7 @@ running Apache.
 
 Enter Cloudflare worker pages, ASTRO site framework, and GitHub for serviceable path to fully proxied and lightweight static page creation.
 
-Want to customize your HTML and have an iframe embedded? Sure!
+Want to customize your HTML and have an iframe embedded in a post Sure!
 
 		  <h3>SOCIAL PREVIEW Value for value options</h3>
   <iframe
@@ -22,3 +22,15 @@ Want to customize your HTML and have an iframe embedded? Sure!
     loading="lazy"
     allowfullscreen>
   </iframe>
+
+**Want to use Markdown?**
+[*] Sure (https://duckduckgo.com/?q=links+work+here+also&ia=web)[link]
+
+**STEPS**
+[*] Create free github account
+[*] Create free cloudflare account
+[*] Create free namecheap account
+[*] Register domain in namecheap (or Cloudflare)
+[*] Configure 
+
+
