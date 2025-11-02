@@ -4,127 +4,163 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Squares, Spaces & Pairs — 3D Map Overview</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Squares, Spaces & Pairs</title>
 <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 10px; background: #f6f4ef; }
-    h1 { font-size: 34px; margin-bottom: 6px; }
-    #message { font-size: 18px; margin: 6px 0; }
-    #timer { font-size: 20px; color: darkred; margin-bottom: 10px; }
-
-    .layout { display: flex; justify-content: center; gap: 30px; align-items:flex-start; flex-wrap:wrap; }
-    .left { min-width: 420px; }
-    .right { width: 420px; text-align:left; }
-
-    .board { display:flex; justify-content:center; align-items:center; margin: 10px 0; }
-    .left-wing, .right-wing { display:flex; flex-direction:column; gap:6px; margin:0 8px; }
-    .pair { display:flex; gap:6px; }
-    .center { display:grid; grid-template-columns:repeat(3,50px); grid-template-rows:repeat(3,50px); gap:5px; }
-    .cell { width:50px;height:50px;border:1px solid #222; background:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; }
-    .cell:hover { background:#eef; }
-
-    .scoreboard { display:flex; justify-content:center; gap:30px; margin-top:12px; }
-    .score-panel { border:2px solid #ccc; border-radius:10px; padding:10px 18px; width:190px; background:#fff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition:box-shadow .2s, border-color .2s; }
-    .score-panel h2 { margin: 0 0 8px 0; font-size:18px; letter-spacing:1px; }
-    .score-item { font-size:16px; margin:4px 0; }
-    .leader { box-shadow: 0 0 18px 4px rgba(66,133,244,0.24); border-color: rgba(66,133,244,0.9); }
-    .leader-o { box-shadow: 0 0 18px 4px rgba(220,77,77,0.24); border-color: rgba(220,77,77,0.9); }
-    .overview { width:700px; max-width:100%; margin: 6px auto 0; position:relative; border-radius:8px; overflow:hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.12); background:#eee; }
-    .overview img { display:block; width:100%; height:auto; }
-    canvas#mapCanvas { position:absolute; left:0; top:0; pointer-events:none; }
-
-    /* small responsive tweak */
-    @media (max-width: 1020px) {
-      .layout { flex-direction:column; align-items:center; }
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  .board {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+  }
+  .left-wing,
+  .right-wing {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
+  }
+  .pair {
+    display: flex;
+  }
+  .center {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+    gap: 5px;
+  }
+  .cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+  }
+  .cell:hover {
+    background-color: #e0e0e0;
+  }
+  #message {
+    font-size: 20px;
+    margin: 10px;
+  }
+  #timer {
+    font-size: 24px;
+    color: red;
+  }
+  .scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+  }
+  .score-panel {
+    border: 3px solid #555;
+    border-radius: 10px;
+    padding: 10px 20px;
+    width: 200px;
+    background-color: #f2f2f2;
+    transition: all 0.3s ease;
+  }
+  .score-panel h2 {
+    margin-bottom: 10px;
+  }
+  .score-item {
+    font-size: 18px;
+    margin: 4px 0;
+  }
+  /* Leader highlight base styles */
+  .leader-x {
+    border-color: #1e90ff;
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.8);
+    background-color: #e8f3ff;
+  }
+  .leader-o {
+    border-color: #ff4d4d;
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.8);
+    background-color: #ffecec;
+  }
+  /* Quick flash animation */
+  @keyframes flash {
+    0% {
+      background-color: yellow;
+      box-shadow: 0 0 20px yellow;
     }
+    100% {
+      background-color: inherit;
+      box-shadow: none;
+    }
+  }
+  .flash {
+    animation: flash 0.5s ease-out;
+  }
 </style>
 </head>
 <body>
-<h1>SQUARES, SPACES & PAIRS</h1>
-<div id="message">X's turn.</div>
-<div id="timer">10</div>
-
-<div class="layout">
-  <div class="left">
-    <div class="board">
-      <div class="left-wing">
-        <!-- left wing -->
-        <div class="pair"><div class="cell square" data-type="square" data-section="0" data-index="0"></div><div class="cell square" data-type="square" data-section="0" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="1" data-index="0"></div><div class="cell square" data-type="square" data-section="1" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="2" data-index="0"></div><div class="cell square" data-type="square" data-section="2" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="3" data-index="0"></div><div class="cell square" data-type="square" data-section="3" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="4" data-index="0"></div><div class="cell square" data-type="square" data-section="4" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="5" data-index="0"></div><div class="cell square" data-type="square" data-section="5" data-index="1"></div></div>
-      </div>
-
-      <div class="center" style="margin:0 10px;">
-        <div class="cell space" data-type="space" data-row="0" data-col="0"></div>
-        <div class="cell space" data-type="space" data-row="0" data-col="1"></div>
-        <div class="cell space" data-type="space" data-row="0" data-col="2"></div>
-        <div class="cell space" data-type="space" data-row="1" data-col="0"></div>
-        <div class="cell space" data-type="space" data-row="1" data-col="1"></div>
-        <div class="cell space" data-type="space" data-row="1" data-col="2"></div>
-        <div class="cell space" data-type="space" data-row="2" data-col="0"></div>
-        <div class="cell space" data-type="space" data-row="2" data-col="1"></div>
-        <div class="cell space" data-type="space" data-row="2" data-col="2"></div>
-      </div>
-
-      <div class="right-wing">
-        <!-- right wing -->
-        <div class="pair"><div class="cell square" data-type="square" data-section="6" data-index="0"></div><div class="cell square" data-type="square" data-section="6" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="7" data-index="0"></div><div class="cell square" data-type="square" data-section="7" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="8" data-index="0"></div><div class="cell square" data-type="square" data-section="8" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="9" data-index="0"></div><div class="cell square" data-type="square" data-section="9" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="10" data-index="0"></div><div class="cell square" data-type="square" data-section="10" data-index="1"></div></div>
-        <div class="pair"><div class="cell square" data-type="square" data-section="11" data-index="0"></div><div class="cell square" data-type="square" data-section="11" data-index="1"></div></div>
-      </div>
+  <h1>Squares, Spaces & Pairs</h1>
+  <div id="message">X's turn.</div>
+  <div id="timer">10</div>
+  <div class="board">
+    <div class="left-wing">
+      <!-- Left wing -->
+      <div class="pair"><div class="cell square" data-type="square" data-section="0" data-index="0"></div><div class="cell square" data-type="square" data-section="0" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="1" data-index="0"></div><div class="cell square" data-type="square" data-section="1" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="2" data-index="0"></div><div class="cell square" data-type="square" data-section="2" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="3" data-index="0"></div><div class="cell square" data-type="square" data-section="3" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="4" data-index="0"></div><div class="cell square" data-type="square" data-section="4" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="5" data-index="0"></div><div class="cell square" data-type="square" data-section="5" data-index="1"></div></div>
     </div>
-
-    <div class="scoreboard">
-      <div class="score-panel" id="x-panel">
-        <h2>Player X</h2>
-        <div class="score-item">Squares: <span id="x-squares">0</span></div>
-        <div class="score-item">Spaces: <span id="x-spaces">0</span></div>
-        <div class="score-item">Pairs: <span id="x-pairs">0</span></div>
-        <div class="score-item"><strong>Total: <span id="x-total">0</span></strong></div>
-      </div>
-
-      <div class="score-panel" id="o-panel">
-        <h2>Player O</h2>
-        <div class="score-item">Squares: <span id="o-squares">0</span></div>
-        <div class="score-item">Spaces: <span id="o-spaces">0</span></div>
-        <div class="score-item">Pairs: <span id="o-pairs">0</span></div>
-        <div class="score-item"><strong>Total: <span id="o-total">0</span></strong></div>
-      </div>
+    <div class="center">
+      <!-- Center 3x3 -->
+      <div class="cell space" data-type="space" data-row="0" data-col="0"></div>
+      <div class="cell space" data-type="space" data-row="0" data-col="1"></div>
+      <div class="cell space" data-type="space" data-row="0" data-col="2"></div>
+      <div class="cell space" data-type="space" data-row="1" data-col="0"></div>
+      <div class="cell space" data-type="space" data-row="1" data-col="1"></div>
+      <div class="cell space" data-type="space" data-row="1" data-col="2"></div>
+      <div class="cell space" data-type="space" data-row="2" data-col="0"></div>
+      <div class="cell space" data-type="space" data-row="2" data-col="1"></div>
+      <div class="cell space" data-type="space" data-row="2" data-col="2"></div>
     </div>
-
-  </div>
-
-  <div class="right">
-    <div style="font-weight:700; font-size:14px; margin-bottom:10px;">3D MAP OVERVIEW</div>
-
-    <!-- Overview image + canvas overlay -->
-    <div class="overview" id="overviewContainer">
-      <img id="mapImage" src="/mnt/data/SquaresNSpaces-blank.png" alt="map reference">
-      <canvas id="mapCanvas"></canvas>
-    </div>
-
-    <div style="margin-top:12px; font-size:13px; color:#222;">
-      <strong>Gameplay (summary)</strong>
-      <p style="margin:6px 0 0;">Place markers into spaces or squares. Pairs (two in same section) give extra point. 10s turn timer.</p>
+    <div class="right-wing">
+      <!-- Right wing -->
+      <div class="pair"><div class="cell square" data-type="square" data-section="6" data-index="0"></div><div class="cell square" data-type="square" data-section="6" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="7" data-index="0"></div><div class="cell square" data-type="square" data-section="7" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="8" data-index="0"></div><div class="cell square" data-type="square" data-section="8" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="9" data-index="0"></div><div class="cell square" data-type="square" data-section="9" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="10" data-index="0"></div><div class="cell square" data-type="square" data-section="10" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="11" data-index="0"></div><div class="cell square" data-type="square" data-section="11" data-index="1"></div></div>
     </div>
   </div>
-</div>
+
+  <div class="scoreboard">
+    <div class="score-panel" id="x-panel">
+      <h2>Player X</h2>
+      <div class="score-item">Squares: <span id="x-squares">0</span></div>
+      <div class="score-item">Spaces: <span id="x-spaces">0</span></div>
+      <div class="score-item">Pairs: <span id="x-pairs">0</span></div>
+      <div class="score-item"><strong>Total: <span id="x-total">0</span></strong></div>
+    </div>
+    <div class="score-panel" id="o-panel">
+      <h2>Player O</h2>
+      <div class="score-item">Squares: <span id="o-squares">0</span></div>
+      <div class="score-item">Spaces: <span id="o-spaces">0</span></div>
+      <div class="score-item">Pairs: <span id="o-pairs">0</span></div>
+      <div class="score-item"><strong>Total: <span id="o-total">0</span></strong></div>
+    </div>
+  </div>
 
 <script>
-/* -------------------------
-   Game state (same as before)
-   ------------------------- */
 let currentPlayer = 'X';
 let timerId;
 let remainingTime = 10;
@@ -138,6 +174,10 @@ const message = document.getElementById('message');
 const timerDisplay = document.getElementById('timer');
 const cells = document.querySelectorAll('.cell');
 
+const xPanel = document.getElementById('x-panel');
+const oPanel = document.getElementById('o-panel');
+let lastLeader = null;
+
 cells.forEach(cell => cell.addEventListener('click', handleClick));
 
 function handleClick(e) {
@@ -147,13 +187,13 @@ function handleClick(e) {
 
   const type = cell.dataset.type;
   if (type === 'space') {
-    const row = parseInt(cell.dataset.row);
-    const col = parseInt(cell.dataset.col);
+    const row = +cell.dataset.row;
+    const col = +cell.dataset.col;
     if (spaces[row][col]) return;
     spaces[row][col] = currentPlayer;
-  } else if (type === 'square') {
-    const section = parseInt(cell.dataset.section);
-    const index = parseInt(cell.dataset.index);
+  } else {
+    const section = +cell.dataset.section;
+    const index = +cell.dataset.index;
     if (sections[section][index]) return;
     sections[section][index] = currentPlayer;
   }
@@ -161,7 +201,6 @@ function handleClick(e) {
   cell.textContent = currentPlayer;
   clearInterval(timerId);
   updateScoreboard();
-  // redraw overlay is called inside updateScoreboard
   checkEndGame();
   if (!gameOver) {
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
@@ -178,7 +217,6 @@ function startTimer() {
     timerDisplay.textContent = remainingTime;
     if (remainingTime <= 0) {
       clearInterval(timerId);
-      message.textContent = `${currentPlayer} lost turn.`;
       currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
       message.textContent = `${currentPlayer}'s turn.`;
       if (!gameOver) startTimer();
@@ -186,18 +224,41 @@ function startTimer() {
   }, 1000);
 }
 
-/* -------------------------
-   Score calculation & UI
-   ------------------------- */
+function checkEndGame() {
+  if (isThreeInARow() || areSpacesFilled()) {
+    gameOver = true;
+    clearInterval(timerId);
+    const scores = calculateScores();
+    message.textContent = `Game over. X score: ${scores.X.total}, O score: ${scores.O.total}. `;
+    message.textContent += scores.X.total > scores.O.total
+      ? 'X wins!'
+      : scores.O.total > scores.X.total
+      ? 'O wins!'
+      : 'Tie!';
+    timerDisplay.textContent = '';
+  }
+}
+
+function isThreeInARow() {
+  for (let i = 0; i < 3; i++) {
+    if (spaces[i][0] && spaces[i][0] === spaces[i][1] && spaces[i][1] === spaces[i][2]) return true;
+    if (spaces[0][i] && spaces[0][i] === spaces[1][i] && spaces[1][i] === spaces[2][i]) return true;
+  }
+  if (spaces[0][0] && spaces[0][0] === spaces[1][1] && spaces[1][1] === spaces[2][2]) return true;
+  if (spaces[0][2] && spaces[0][2] === spaces[1][1] && spaces[1][1] === spaces[2][0]) return true;
+  return false;
+}
+
+function areSpacesFilled() {
+  return spaces.every(row => row.every(c => c !== null));
+}
+
 function calculateScores() {
-  const scores = {
-    X: { squares: 0, spaces: 0, pairs: 0, total: 0 },
-    O: { squares: 0, spaces: 0, pairs: 0, total: 0 }
-  };
-  spaces.flat().forEach(cell => { if (cell) scores[cell].spaces++; });
-  sections.flat().forEach(cell => { if (cell) scores[cell].squares++; });
-  sections.forEach(section => {
-    if (section[0] && section[0] === section[1]) scores[section[0]].pairs++;
+  const scores = { X: { squares: 0, spaces: 0, pairs: 0, total: 0 }, O: { squares: 0, spaces: 0, pairs: 0, total: 0 } };
+  spaces.flat().forEach(c => { if (c) scores[c].spaces++; });
+  sections.flat().forEach(c => { if (c) scores[c].squares++; });
+  sections.forEach(sec => {
+    if (sec[0] && sec[0] === sec[1]) scores[sec[0]].pairs++;
   });
   scores.X.total = scores.X.squares + scores.X.spaces + scores.X.pairs;
   scores.O.total = scores.O.squares + scores.O.spaces + scores.O.pairs;
@@ -210,223 +271,33 @@ function updateScoreboard() {
   document.getElementById('x-spaces').textContent = scores.X.spaces;
   document.getElementById('x-pairs').textContent = scores.X.pairs;
   document.getElementById('x-total').textContent = scores.X.total;
-
   document.getElementById('o-squares').textContent = scores.O.squares;
   document.getElementById('o-spaces').textContent = scores.O.spaces;
   document.getElementById('o-pairs').textContent = scores.O.pairs;
   document.getElementById('o-total').textContent = scores.O.total;
 
-  // Leader highlight
-  const xPanel = document.getElementById('x-panel');
-  const oPanel = document.getElementById('o-panel');
-  xPanel.classList.remove('leader','leader-o');
-  oPanel.classList.remove('leader','leader-o');
-
+  xPanel.classList.remove('leader-x','leader-o','flash');
+  oPanel.classList.remove('leader-x','leader-o','flash');
+  let leader = null;
   if (scores.X.total > scores.O.total) {
-    xPanel.classList.add('leader');
+    leader = 'X';
+    xPanel.classList.add('leader-x');
   } else if (scores.O.total > scores.X.total) {
+    leader = 'O';
     oPanel.classList.add('leader-o');
   }
-  // Redraw overlay to reflect new state
-  drawOverlay();
-}
 
-/* -------------------------
-   3D PSEUDO PROJECTION OVERLAY
-   ------------------------- */
-
-/*
-  Approach:
-  - We place a canvas over the provided image, scale it to the image size.
-  - Pre-defined 2D coordinates (approximate) correspond to each central space (9) and each outer square (24).
-  - Markers are drawn with a small bobbing vertical offset and scale factor to simulate depth.
-  - requestAnimationFrame is used for smooth animation; positions read from game state each frame.
-*/
-
-/* Element refs */
-const img = document.getElementById('mapImage');
-const canvas = document.getElementById('mapCanvas');
-const ctx = canvas.getContext('2d');
-
-/* When the image loads, size the canvas and create coordinate maps */
-img.addEventListener('load', () => {
-  resizeCanvasToImage();
-  initCoords();   // create coords relative to canvas size
-  requestAnimationFrame(animate);
-});
-// If image already cached/loaded
-if (img.complete) {
-  resizeCanvasToImage();
-  initCoords();
-  requestAnimationFrame(animate);
-}
-
-function resizeCanvasToImage() {
-  canvas.width = img.clientWidth;
-  canvas.height = img.clientHeight;
-  canvas.style.width = img.clientWidth + 'px';
-  canvas.style.height = img.clientHeight + 'px';
-}
-
-/* Coordinate arrays (relative percentages) -- tweak these for exact alignment.
-   We'll store positions as percentages of canvas width/height and compute actual pixels.
-*/
-let spacesCoords = [];  // 9 central spaces
-let squaresCoords = []; // 24 outer squares (sections * 2)
-
-/* initialize coords as percent positions (x,y) */
-function initCoords() {
-  const w = canvas.width, h = canvas.height;
-
-  // These percent positions were chosen to roughly match your sketch perspective.
-  // If you want precise alignment, tweak these numbers.
-  const spPerc = [
-    [0.42, 0.28], [0.53, 0.32], [0.64, 0.36],
-    [0.40, 0.44], [0.52, 0.50], [0.66, 0.54],
-    [0.39, 0.62], [0.52, 0.70], [0.67, 0.74]
-  ];
-  spacesCoords = spPerc.map(p => ({ x: p[0] * w, y: p[1] * h }));
-
-  // 12 sections with 2 squares each -> 24 coords
-  // We assign pairs around the sides in the same visual perspective.
-  const sqPerc = [
-    [0.25,0.22],[0.31,0.26], [0.29,0.36],[0.35,0.40],
-    [0.30,0.50],[0.36,0.54], [0.31,0.66],[0.37,0.70],
-    [0.46,0.20],[0.52,0.24], [0.58,0.30],[0.64,0.34],
-    [0.57,0.44],[0.63,0.48], [0.59,0.58],[0.65,0.62],
-    [0.49,0.68],[0.55,0.72], [0.20,0.52],[0.24,0.60],
-    [0.72,0.50],[0.76,0.56], [0.16,0.28],[0.20,0.34]
-  ];
-  // If sqPerc length not 24, fill remaining with default near edges
-  squaresCoords = sqPerc.slice(0,24).map(p => ({ x: p[0]*w, y: p[1]*h }));
-}
-
-/* Animation params */
-let lastTime = 0;
-const bobAmplitude = 6; // px
-const bobSpeed = 2.2;   // radians/sec
-const pulseSpeed = 2.0;
-
-/* Draw overlay based on current game state */
-function drawOverlay(time) {
-  const now = time || performance.now();
-  const dt = (now - lastTime) / 1000;
-  lastTime = now;
-
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // draw subtle guide lines (optional)
-  // ctx.strokeStyle = 'rgba(0,0,0,0.06)';
-  // ctx.beginPath();
-  // spacesCoords.forEach((p,i)=>{ ctx.moveTo(p.x-8,p.y); ctx.arc(p.x,p.y,8,0,Math.PI*2); });
-  // ctx.stroke();
-
-  // Draw squares (outer small markers) first, then spaces (center) on top
-  // squares: sections array has 12 sections * 2
-  sections.forEach((pair, sectionIndex) => {
-    const baseIndex = sectionIndex * 2;
-    for (let i = 0; i < 2; i++) {
-      const owner = pair[i];
-      const coord = squaresCoords[baseIndex + i];
-      if (!coord) continue;
-      drawMarkerAt(coord.x, coord.y, owner, now, /*isSpace=*/ false);
-    }
-  });
-
-  // spaces: 3x3
-  for (let r = 0; r < 3; r++) {
-    for (let c = 0; c < 3; c++) {
-      const owner = spaces[r][c];
-      const idx = r*3 + c;
-      const coord = spacesCoords[idx];
-      drawMarkerAt(coord.x, coord.y, owner, now, /*isSpace=*/ true);
-    }
+  // flash on change
+  if (leader && leader !== lastLeader) {
+    const panel = leader === 'X' ? xPanel : oPanel;
+    panel.classList.add('flash');
+    setTimeout(() => panel.classList.remove('flash'), 600);
   }
+  lastLeader = leader;
 }
 
-/* draws a single marker at pixel coords (x,y)
-   - owner: 'X' or 'O' or null
-   - isSpace: central spaces drawn larger
-*/
-function drawMarkerAt(x, y, owner, now, isSpace) {
-  // background halo when unclaimed? skip
-  // If claimed, draw circle + symbol. Use simple perspective: items lower on image scale slightly bigger.
-  // scale by y position (lower -> larger)
-  const baseDepthScale = 0.8 + (y / canvas.height) * 0.5; // range ~0.8-1.3
-  const size = (isSpace ? 26 : 14) * baseDepthScale;
-
-  // bob animation
-  const t = (now || performance.now()) / 1000;
-  const bob = Math.sin(t * bobSpeed + (x+y)/100) * (bobAmplitude * (isSpace ? 1.0 : 0.6)) * 0.5;
-
-  if (!owner) {
-    // optional lightly show possible marker places
-    ctx.fillStyle = 'rgba(0,0,0,0.06)';
-    ctx.beginPath();
-    ctx.ellipse(x, y + bob * 0.2, size*0.6, size*0.35, -0.3, 0, Math.PI*2);
-    ctx.fill();
-    return;
-  }
-
-  // draw shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.18)';
-  ctx.beginPath();
-  ctx.ellipse(x + 6, y + size*0.65 + 6 + bob*0.08, size*0.8, size*0.28, -0.4, 0, Math.PI*2);
-  ctx.fill();
-
-  // draw marker body (circle behind)
-  if (owner === 'X') ctx.fillStyle = 'rgba(66,133,244,0.95)'; // bluish
-  else ctx.fillStyle = 'rgba(220,77,77,0.95)'; // reddish
-
-  const radius = size;
-  ctx.beginPath();
-  ctx.ellipse(x, y + bob*0.08, radius, radius*0.75, -0.2, 0, Math.PI*2);
-  ctx.fill();
-
-  // draw symbol
-  ctx.fillStyle = 'white';
-  ctx.font = `${Math.round(radius*1.1)}px Arial`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(owner, x, y + bob*0.08 - 2);
-
-  // optional glow for leading player's markers (subtle)
-  // not implemented per-marker to avoid visual noise
-}
-
-/* animation loop */
-function animate(time) {
-  drawOverlay(time);
-  requestAnimationFrame(animate);
-}
-
-/* Expose redraw function for external calls */
-function redrawNow() {
-  drawOverlay(performance.now());
-}
-
-/* call drawOverlay also when window resizes (recompute coords) */
-window.addEventListener('resize', () => {
-  if (img.complete) {
-    resizeCanvasToImage();
-    initCoords();
-    redrawNow();
-  }
-});
-
-/* Start initial scoreboard/overlay */
 startTimer();
 updateScoreboard();
-redrawNow();
-
-/* When the script first runs, image might not be loaded yet.
-   Ensure overlay is drawn once image size is known. If image is missing,
-   the canvas remains sized to 0; check console for errors.
-*/
-
-/* -------------------------
-   End of overlay code
-   ------------------------- */
 </script>
 </body>
 </html>
