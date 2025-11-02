@@ -29,7 +29,7 @@ src="https://primal.net/e/naddr1qvzqqqr4gupzqaf4zg3xgl9xyn8pvjch5gjkd2nhf53ldqzd
   </iframe>
 
 ## **Want to use Markdown?**
-* Sure (https://duckduckgo.com/?q=links+work+here+also&ia=web)[link]
+* Sure (https://duckduckgo.com/?q=links+work+here+also&ia=web[link]}
 
 **STEPS**
 * Create free github account
