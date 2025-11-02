@@ -9,7 +9,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squares, Spaces & Pairs ONLINE</title>
+    <title>Squares, Spaces & Pairs</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,6 +56,26 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
         #timer {
             font-size: 24px;
             color: red;
+        }
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .score-panel {
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 10px 20px;
+            width: 200px;
+            background-color: #f2f2f2;
+        }
+        .score-panel h2 {
+            margin-bottom: 10px;
+        }
+        .score-item {
+            font-size: 18px;
+            margin: 4px 0;
         }
     </style>
 </head>
@@ -132,6 +152,23 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
         </div>
     </div>
 
+    <div class="scoreboard">
+        <div class="score-panel" id="x-panel">
+            <h2>Player X</h2>
+            <div class="score-item">Squares: <span id="x-squares">0</span></div>
+            <div class="score-item">Spaces: <span id="x-spaces">0</span></div>
+            <div class="score-item">Pairs: <span id="x-pairs">0</span></div>
+            <div class="score-item"><strong>Total: <span id="x-total">0</span></strong></div>
+        </div>
+        <div class="score-panel" id="o-panel">
+            <h2>Player O</h2>
+            <div class="score-item">Squares: <span id="o-squares">0</span></div>
+            <div class="score-item">Spaces: <span id="o-spaces">0</span></div>
+            <div class="score-item">Pairs: <span id="o-pairs">0</span></div>
+            <div class="score-item"><strong>Total: <span id="o-total">0</span></strong></div>
+        </div>
+    </div>
+
     <script>
         let currentPlayer = 'X';
         let timerId;
@@ -146,9 +183,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
         const timerDisplay = document.getElementById('timer');
         const cells = document.querySelectorAll('.cell');
 
-        cells.forEach(cell => {
-            cell.addEventListener('click', handleClick);
-        });
+        cells.forEach(cell => cell.addEventListener('click', handleClick));
 
         function handleClick(e) {
             if (gameOver || remainingTime <= 0) return;
@@ -170,6 +205,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
             cell.textContent = currentPlayer;
             clearInterval(timerId);
+            updateScoreboard();
             checkEndGame();
             if (!gameOver) {
                 currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
@@ -199,24 +235,21 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
                 gameOver = true;
                 clearInterval(timerId);
                 const scores = calculateScores();
-                message.textContent = `Game over. X score: ${scores.X}, O score: ${scores.O}. `;
-                if (scores.X > scores.O) message.textContent += 'X wins!';
-                else if (scores.O > scores.X) message.textContent += 'O wins!';
+                message.textContent = `Game over. X score: ${scores.X.total}, O score: ${scores.O.total}. `;
+                if (scores.X.total > scores.O.total) message.textContent += 'X wins!';
+                else if (scores.O.total > scores.X.total) message.textContent += 'O wins!';
                 else message.textContent += 'Tie!';
                 timerDisplay.textContent = '';
             }
         }
 
         function isThreeInARow() {
-            // Rows
             for (let i = 0; i < 3; i++) {
                 if (spaces[i][0] && spaces[i][0] === spaces[i][1] && spaces[i][1] === spaces[i][2]) return true;
             }
-            // Columns
             for (let i = 0; i < 3; i++) {
                 if (spaces[0][i] && spaces[0][i] === spaces[1][i] && spaces[1][i] === spaces[2][i]) return true;
             }
-            // Diagonals
             if (spaces[0][0] && spaces[0][0] === spaces[1][1] && spaces[1][1] === spaces[2][2]) return true;
             if (spaces[0][2] && spaces[0][2] === spaces[1][1] && spaces[1][1] === spaces[2][0]) return true;
             return false;
@@ -227,26 +260,45 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
         }
 
         function calculateScores() {
-            const scores = { X: 0, O: 0 };
+            const scores = {
+                X: { squares: 0, spaces: 0, pairs: 0, total: 0 },
+                O: { squares: 0, spaces: 0, pairs: 0, total: 0 }
+            };
             // Spaces
             spaces.flat().forEach(cell => {
-                if (cell) scores[cell]++;
+                if (cell) scores[cell].spaces++;
             });
             // Squares
             sections.flat().forEach(cell => {
-                if (cell) scores[cell]++;
+                if (cell) scores[cell].squares++;
             });
             // Pairs
             sections.forEach(section => {
                 if (section[0] && section[0] === section[1]) {
-                    scores[section[0]]++;
+                    scores[section[0]].pairs++;
                 }
             });
+            // Totals
+            scores.X.total = scores.X.squares + scores.X.spaces + scores.X.pairs;
+            scores.O.total = scores.O.squares + scores.O.spaces + scores.O.pairs;
             return scores;
         }
 
-        // Start the game
+        function updateScoreboard() {
+            const scores = calculateScores();
+            document.getElementById('x-squares').textContent = scores.X.squares;
+            document.getElementById('x-spaces').textContent = scores.X.spaces;
+            document.getElementById('x-pairs').textContent = scores.X.pairs;
+            document.getElementById('x-total').textContent = scores.X.total;
+
+            document.getElementById('o-squares').textContent = scores.O.squares;
+            document.getElementById('o-spaces').textContent = scores.O.spaces;
+            document.getElementById('o-pairs').textContent = scores.O.pairs;
+            document.getElementById('o-total').textContent = scores.O.total;
+        }
+
         startTimer();
+        updateScoreboard();
     </script>
 </body>
 </html>
