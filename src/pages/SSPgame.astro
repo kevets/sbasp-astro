@@ -1,0 +1,310 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Squares, Spaces & Pairs</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  .board {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+  }
+  .left-wing,
+  .right-wing {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
+  }
+  .pair {
+    display: flex;
+  }
+  .center {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+    gap: 5px;
+  }
+  .cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+  }
+  .cell:hover {
+    background-color: #e0e0e0;
+  }
+  #message {
+    font-size: 20px;
+    margin: 10px;
+  }
+  #timer {
+    font-size: 24px;
+    color: red;
+  }
+  .scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+  }
+  .score-panel {
+    border: 3px solid #555;
+    border-radius: 10px;
+    padding: 10px 20px;
+    width: 200px;
+    background-color: #f2f2f2;
+    transition: all 0.3s ease;
+  }
+  .score-panel h2 {
+    margin-bottom: 10px;
+  }
+  .score-item {
+    font-size: 18px;
+    margin: 4px 0;
+  }
+  /* Leader highlight base styles */
+  .leader-x {
+    border-color: #1e90ff;
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.8);
+    background-color: #e8f3ff;
+  }
+  .leader-o {
+    border-color: #ff4d4d;
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.8);
+    background-color: #ffecec;
+  }
+  /* Quick flash animation */
+  @keyframes flash {
+    0% {
+      background-color: yellow;
+      box-shadow: 0 0 20px yellow;
+    }
+    100% {
+      background-color: inherit;
+      box-shadow: none;
+    }
+  }
+  .flash {
+    animation: flash 0.5s ease-out;
+  }
+</style>
+</head>
+<body>
+  <h1>Squares, Spaces & Pairs</h1>
+  <div id="message">X's turn.</div>
+  <div id="timer">10</div>
+  <div class="board">
+    <div class="left-wing">
+      <!-- Left wing -->
+      <div class="pair"><div class="cell square" data-type="square" data-section="0" data-index="0"></div><div class="cell square" data-type="square" data-section="0" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="1" data-index="0"></div><div class="cell square" data-type="square" data-section="1" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="2" data-index="0"></div><div class="cell square" data-type="square" data-section="2" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="3" data-index="0"></div><div class="cell square" data-type="square" data-section="3" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="4" data-index="0"></div><div class="cell square" data-type="square" data-section="4" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="5" data-index="0"></div><div class="cell square" data-type="square" data-section="5" data-index="1"></div></div>
+    </div>
+    <div class="center">
+      <!-- Center 3x3 -->
+      <div class="cell space" data-type="space" data-row="0" data-col="0"></div>
+      <div class="cell space" data-type="space" data-row="0" data-col="1"></div>
+      <div class="cell space" data-type="space" data-row="0" data-col="2"></div>
+      <div class="cell space" data-type="space" data-row="1" data-col="0"></div>
+      <div class="cell space" data-type="space" data-row="1" data-col="1"></div>
+      <div class="cell space" data-type="space" data-row="1" data-col="2"></div>
+      <div class="cell space" data-type="space" data-row="2" data-col="0"></div>
+      <div class="cell space" data-type="space" data-row="2" data-col="1"></div>
+      <div class="cell space" data-type="space" data-row="2" data-col="2"></div>
+    </div>
+    <div class="right-wing">
+      <!-- Right wing -->
+      <div class="pair"><div class="cell square" data-type="square" data-section="6" data-index="0"></div><div class="cell square" data-type="square" data-section="6" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="7" data-index="0"></div><div class="cell square" data-type="square" data-section="7" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="8" data-index="0"></div><div class="cell square" data-type="square" data-section="8" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="9" data-index="0"></div><div class="cell square" data-type="square" data-section="9" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="10" data-index="0"></div><div class="cell square" data-type="square" data-section="10" data-index="1"></div></div>
+      <div class="pair"><div class="cell square" data-type="square" data-section="11" data-index="0"></div><div class="cell square" data-type="square" data-section="11" data-index="1"></div></div>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-panel" id="x-panel">
+      <h2>Player X</h2>
+      <div class="score-item">Squares: <span id="x-squares">0</span></div>
+      <div class="score-item">Spaces: <span id="x-spaces">0</span></div>
+      <div class="score-item">Pairs: <span id="x-pairs">0</span></div>
+      <div class="score-item"><strong>Total: <span id="x-total">0</span></strong></div>
+    </div>
+    <div class="score-panel" id="o-panel">
+      <h2>Player O</h2>
+      <div class="score-item">Squares: <span id="o-squares">0</span></div>
+      <div class="score-item">Spaces: <span id="o-spaces">0</span></div>
+      <div class="score-item">Pairs: <span id="o-pairs">0</span></div>
+      <div class="score-item"><strong>Total: <span id="o-total">0</span></strong></div>
+    </div>
+  </div>
+<br><br><br>
+Donate if you enjoy this and are getting value - <i><b>LIGHTNING ACCEPTED</b></i><br>
+<div style="max-width:300px;">
+  <img src="/SSPV4V.jpg" alt="Sample Image" style="width:100%; height:auto; display:block; border-radius:8px;"/>
+</div><div style="max-width:300px;">
+  <img src="/SSPV4Vb.jpg" alt="Sample Image" style="width:100%; height:auto; display:block; border-radius:8px;"/>
+</div>
+
+<script>
+let currentPlayer = 'X';
+let timerId;
+let remainingTime = 10;
+let gameOver = false;
+const timeLimit = 10;
+
+const spaces = Array(3).fill().map(() => Array(3).fill(null));
+const sections = Array(12).fill().map(() => Array(2).fill(null));
+
+const message = document.getElementById('message');
+const timerDisplay = document.getElementById('timer');
+const cells = document.querySelectorAll('.cell');
+
+const xPanel = document.getElementById('x-panel');
+const oPanel = document.getElementById('o-panel');
+let lastLeader = null;
+
+cells.forEach(cell => cell.addEventListener('click', handleClick));
+
+function handleClick(e) {
+  if (gameOver || remainingTime <= 0) return;
+  const cell = e.target;
+  if (cell.textContent) return;
+
+  const type = cell.dataset.type;
+  if (type === 'space') {
+    const row = +cell.dataset.row;
+    const col = +cell.dataset.col;
+    if (spaces[row][col]) return;
+    spaces[row][col] = currentPlayer;
+  } else {
+    const section = +cell.dataset.section;
+    const index = +cell.dataset.index;
+    if (sections[section][index]) return;
+    sections[section][index] = currentPlayer;
+  }
+
+  cell.textContent = currentPlayer;
+  clearInterval(timerId);
+  updateScoreboard();
+  checkEndGame();
+  if (!gameOver) {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    message.textContent = `${currentPlayer}'s turn.`;
+    startTimer();
+  }
+}
+
+function startTimer() {
+  remainingTime = timeLimit;
+  timerDisplay.textContent = remainingTime;
+  timerId = setInterval(() => {
+    remainingTime--;
+    timerDisplay.textContent = remainingTime;
+    if (remainingTime <= 0) {
+      clearInterval(timerId);
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      message.textContent = `${currentPlayer}'s turn.`;
+      if (!gameOver) startTimer();
+    }
+  }, 1000);
+}
+
+function checkEndGame() {
+  if (isThreeInARow() || areSpacesFilled()) {
+    gameOver = true;
+    clearInterval(timerId);
+    const scores = calculateScores();
+    message.textContent = `Game over. X score: ${scores.X.total}, O score: ${scores.O.total}. `;
+    message.textContent += scores.X.total > scores.O.total
+      ? 'X wins!'
+      : scores.O.total > scores.X.total
+      ? 'O wins!'
+      : 'Tie!';
+    timerDisplay.textContent = '';
+  }
+}
+
+function isThreeInARow() {
+  for (let i = 0; i < 3; i++) {
+    if (spaces[i][0] && spaces[i][0] === spaces[i][1] && spaces[i][1] === spaces[i][2]) return true;
+    if (spaces[0][i] && spaces[0][i] === spaces[1][i] && spaces[1][i] === spaces[2][i]) return true;
+  }
+  if (spaces[0][0] && spaces[0][0] === spaces[1][1] && spaces[1][1] === spaces[2][2]) return true;
+  if (spaces[0][2] && spaces[0][2] === spaces[1][1] && spaces[1][1] === spaces[2][0]) return true;
+  return false;
+}
+
+function areSpacesFilled() {
+  return spaces.every(row => row.every(c => c !== null));
+}
+
+function calculateScores() {
+  const scores = { X: { squares: 0, spaces: 0, pairs: 0, total: 0 }, O: { squares: 0, spaces: 0, pairs: 0, total: 0 } };
+  spaces.flat().forEach(c => { if (c) scores[c].spaces++; });
+  sections.flat().forEach(c => { if (c) scores[c].squares++; });
+  sections.forEach(sec => {
+    if (sec[0] && sec[0] === sec[1]) scores[sec[0]].pairs++;
+  });
+  scores.X.total = scores.X.squares + scores.X.spaces + scores.X.pairs;
+  scores.O.total = scores.O.squares + scores.O.spaces + scores.O.pairs;
+  return scores;
+}
+
+function updateScoreboard() {
+  const scores = calculateScores();
+  document.getElementById('x-squares').textContent = scores.X.squares;
+  document.getElementById('x-spaces').textContent = scores.X.spaces;
+  document.getElementById('x-pairs').textContent = scores.X.pairs;
+  document.getElementById('x-total').textContent = scores.X.total;
+  document.getElementById('o-squares').textContent = scores.O.squares;
+  document.getElementById('o-spaces').textContent = scores.O.spaces;
+  document.getElementById('o-pairs').textContent = scores.O.pairs;
+  document.getElementById('o-total').textContent = scores.O.total;
+
+  xPanel.classList.remove('leader-x','leader-o','flash');
+  oPanel.classList.remove('leader-x','leader-o','flash');
+  let leader = null;
+  if (scores.X.total > scores.O.total) {
+    leader = 'X';
+    xPanel.classList.add('leader-x');
+  } else if (scores.O.total > scores.X.total) {
+    leader = 'O';
+    oPanel.classList.add('leader-o');
+  }
+
+  // flash on change
+  if (leader && leader !== lastLeader) {
+    const panel = leader === 'X' ? xPanel : oPanel;
+    panel.classList.add('flash');
+    setTimeout(() => panel.classList.remove('flash'), 600);
+  }
+  lastLeader = leader;
+}
+
+startTimer();
+updateScoreboard();
+</script>
+</body>
+</html>
