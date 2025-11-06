@@ -4,187 +4,625 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Runaway Ostrich Race</title>
-  <style>
-    body { margin: 0; overflow: hidden; background: #aef; font-family: sans-serif; }
-    canvas { background: linear-gradient(#aef, #fff); display: block; margin: 0 auto; border: 3px solid #333; }
-    #ui { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); text-align: center; }
-    #timer { font-size: 20px; background: rgba(255,255,255,0.8); padding: 5px 15px; border-radius: 8px; }
-    #saveBtn, #startBtn { display: none; margin-top: 10px; padding: 10px 20px; font-size: 16px; border-radius: 10px; cursor: pointer; background: #ffa500; border: none; color: white; }
-    #menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-size: 28px; }
-    #menu button { margin-top: 20px; padding: 15px 30px; font-size: 20px; border: none; background: #28a; color: white; border-radius: 10px; cursor: pointer; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RUNAWAY OSTRICH — Bounce Pad Races</title>
+<style>
+  :root{
+    --bg:#8fd3ff;
+    --ground:#6b3f1f;
+    --platform:#3c763d;
+    --pad:#ff5a3c;
+    --ui:#fff;
+    --accent:#ffc857;
+  }
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{background:linear-gradient(#8fd3ff, #c7f0ff 60%);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;}
+  #gameWrap{width:960px;max-width:100%;background:linear-gradient(#bfe9ff,#ffffff);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.18);overflow:hidden;padding:12px;}
+  canvas{display:block;background:transparent;border-radius:8px;width:100%;height:540px;image-rendering:pixelated;}
+  .hud{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;font-weight:600;color:#223;}
+  .hud .left,.hud .right{display:flex;gap:12px;align-items:center;}
+  .btn{background:var(--accent);border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:700;}
+  .small{font-size:13px;opacity:0.95}
+  .controls{margin-top:8px;display:flex;gap:8px;justify-content:center;font-size:13px;color:#123;}
+  .note{font-size:13px;color:#123;opacity:0.9}
+  .splits{font-size:13px;color:#123;display:flex;flex-direction:column;gap:2px;min-width:220px;}
+  .checkpoint{padding:4px 6px;background:rgba(255,255,255,0.6);border-radius:6px}
+</style>
 </head>
-<body>
-  <h3>GAMES</h3>
+<body>  <h3>GAMES</h3>
   				<li>RO: Running Ostrich 🏃‍♂️‍➡️<a href="https://show.sbasp.com/ROgame">link</a></li>
   				<li>SSP: Squares, Spaces & Pairs ⏹️<a href="https://show.sbasp.com/SSPgame">link</a></li>
   <h3>NAV</h3>
   				<li>SHOW: 📚<a href="https://show.sbasp.com">link</a></li>
   				<li>SHOP: 🔥<a href="https://shop.sbasp.com">link</a></li>
-  <div id="ui">
-    <div id="timer">Time: 0.00s</div>
-    <button id="saveBtn">Save Race Snapshot</button>
+<div id="gameWrap">
+  <div class="hud">
+    <div class="left">
+      <div><strong>Runaway Ostrich</strong></div>
+      <div class="small">Use ← → to run • Z / Space to jump</div>
+    </div>
+    <div class="right">
+      <div class="small">Lap: <span id="lapDisplay">0</span>/<span id="lapTotal">3</span></div>
+      <div class="small">Time: <span id="timeDisplay">0.00</span>s</div>
+      <div class="small">Best: <span id="bestDisplay">—</span></div>
+      <button id="startBtn" class="btn">Start Race</button>
+    </div>
   </div>
-  <div id="menu">
-    <div>🏁 Runaway Ostrich Race 🏁</div>
-    <button id="startBtnMenu">Start Race</button>
+
+  <canvas id="game" width="960" height="540"></canvas>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+    <div class="controls note">Goal: Complete <strong id="lapTotal2">3</strong> laps. Bounce pads give big jumps. Hit checkpoints in order.</div>
+    <div class="splits">
+      <div class="checkpoint">Next checkpoint: <span id="nextCp">1</span></div>
+      <div class="checkpoint">Lap splits:
+        <div id="splitsList" style="margin-top:6px;font-weight:600">—</div>
+      </div>
+    </div>
   </div>
-  <canvas id="game" width="800" height="400"></canvas>
-  <script>
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-    const menu = document.getElementById('menu');
-    const startBtnMenu = document.getElementById('startBtnMenu');
+</div>
 
-    let ostrich = { x: 50, y: 300, vy: 0, onGround: false, width: 40, height: 40 };
-    const gravity = 0.5;
-    const keys = {};
-    let pads = [];
+<script>
+/* Runaway Ostrich — single-file platformer
+   Controls: Left/Right arrows to move, Space/Z to jump.
+   Race: Start -> countdown -> timer runs; pass checkpoints in order -> complete lap.
+*/
 
-    let startTime = null;
-    let raceFinished = false;
-    let totalTime = 0;
-    let gameStarted = false;
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
 
-    function generateRandomMap() {
-      pads = [];
-      const padCount = 5 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < padCount; i++) {
-        const padX = 150 + i * (100 + Math.random() * 100);
-        const padY = 320 + Math.random() * 40;
-        pads.push({ x: padX, y: padY, w: 80, h: 10 });
-      }
-    }
+const W = canvas.width;
+const H = canvas.height;
 
-    function resetRace() {
-      ostrich.x = 50;
-      ostrich.y = 300;
-      ostrich.vy = 0;
-      raceFinished = false;
-      document.getElementById('saveBtn').style.display = 'none';
-      generateRandomMap();
-      startTime = performance.now();
-    }
+// Game state
+let keys = {};
+let touchState = {left:false,right:false,jump:false};
+let gameRunning = false;
+let raceActive = false;
+let countdown = 0;
+let raceStartTime = 0;
+let currentTime = 0;
+let lapCount = 0;
+const LAP_TARGET = 3;
+document.getElementById('lapTotal').textContent = LAP_TARGET;
+document.getElementById('lapTotal2').textContent = LAP_TARGET;
 
-    function update() {
-      if (!startTime) startTime = performance.now();
-      const now = performance.now();
+let splits = [];
+let bestTime = localStorage.getItem('ostr_best') ? parseFloat(localStorage.getItem('ostr_best')) : null;
+document.getElementById('bestDisplay').textContent = bestTime ? bestTime.toFixed(2)+'s' : '—';
 
-      if (!raceFinished) {
-        totalTime = (now - startTime) / 1000;
-        document.getElementById('timer').innerText = `Time: ${totalTime.toFixed(2)}s`;
-      }
+// Physics constants
+const GRAVITY = 1400; // px/s^2
+const FRICTION = 0.85;
+const MOVE_ACCEL = 2600; // px/s^2
+const MAX_RUN_SPEED = 380; // px/s
+const JUMP_V = 600; // initial jump velocity (px/s)
+const BOUNCE_V = 940; // bounce pad velocity
 
-      // movement
-      if (keys['ArrowRight']) ostrich.x += 4;
-      if (keys['ArrowLeft']) ostrich.x -= 4;
+// Time
+let lastTime = performance.now();
 
-      // jumping
-      ostrich.vy += gravity;
-      ostrich.y += ostrich.vy;
+// Level layout (platforms, pads, checkpoints) in world coordinates
+const level = {
+  width: 3000,
+  height: H,
+  platforms: [],
+  pads: [],
+  checkpoints: []
+};
 
-      if (ostrich.y + ostrich.height > 380) {
-        ostrich.y = 380 - ostrich.height;
-        ostrich.vy = 0;
-        ostrich.onGround = true;
-      }
+// Build a simple circuit-like track of platforms
+function buildLevel() {
+  // ground strip across
+  level.platforms.push({x: -200, y: H - 80, w: level.width + 400, h: 80});
 
-      // check pads
-      for (const pad of pads) {
-        if (
-          ostrich.x + ostrich.width > pad.x &&
-          ostrich.x < pad.x + pad.w &&
-          ostrich.y + ostrich.height > pad.y &&
-          ostrich.y + ostrich.height < pad.y + 10 &&
-          ostrich.vy >= 0
-        ) {
-          ostrich.y = pad.y - ostrich.height;
-          ostrich.vy = -12; // bounce
+  // Some elevated platforms to make a circuit shape
+  const baseY = H - 180;
+  level.platforms.push({x: 100, y: baseY, w: 280, h: 24});
+  level.platforms.push({x: 500, y: baseY-60, w: 220, h: 24});
+  level.platforms.push({x: 820, y: baseY, w: 260, h: 24});
+  level.platforms.push({x: 1180, y: baseY-50, w: 240, h: 24});
+  level.platforms.push({x: 1500, y: baseY, w: 260, h: 24});
+  level.platforms.push({x: 1860, y: baseY-70, w: 300, h: 24});
+  level.platforms.push({x: 2250, y: baseY, w: 420, h: 24});
+
+  // small stepping stones and gaps
+  for (let i=0;i<12;i++){
+    const x = 300 + i*120;
+    const y = baseY - (i%3===0?110: (i%3===1?60:0));
+    level.platforms.push({x:x,y:y,w:70,h:20});
+  }
+
+  // Bounce pads placed strategically
+  level.pads.push({x: 130, y: baseY - 24 - 18, w: 56, h: 14, bounce: BOUNCE_V});
+  level.pads.push({x: 560, y: baseY-60-18, w: 56, h: 14, bounce: BOUNCE_V});
+  level.pads.push({x: 1100, y: baseY-50-18, w: 56, h: 14, bounce: BOUNCE_V});
+  level.pads.push({x: 1900, y: baseY-70-18, w: 56, h: 14, bounce: BOUNCE_V});
+  level.pads.push({x: 2500, y: baseY-24-18, w: 80, h: 16, bounce: BOUNCE_V});
+
+  // Checkpoints (ordered). Use vertical rectangles adjacent to track.
+  const cps = [
+    {x: 90, w: 10, name: 'Start'},
+    {x: 760, w: 10, name: 'CP1'},
+    {x: 1400, w: 10, name: 'CP2'},
+    {x: 2190, w: 10, name: 'CP3'}
+  ];
+  cps.forEach(cp=>{
+    level.checkpoints.push({x:cp.x,y:0,w:cp.w,h:H, name:cp.name});
+  });
+}
+buildLevel();
+
+// Player (Runaway Ostrich)
+const player = {
+  x: 60,
+  y: H - 160,
+  w: 42,
+  h: 48,
+  vx: 0,
+  vy: 0,
+  grounded: false,
+  facing: 1,
+  color: '#fff',
+  stride: 0
+};
+
+// Camera
+const camera = {x:0,y:0,w:W,h:H};
+
+// Helpers
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function now(){return performance.now()/1000;}
+
+// Input
+window.addEventListener('keydown',e=>{
+  keys[e.code] = true;
+  if (e.code === 'Space' || e.key === 'z' || e.key === 'Z') e.preventDefault();
+});
+window.addEventListener('keyup',e=>{
+  keys[e.code] = false;
+});
+
+// Basic touch controls for mobile — left/right/jump zones
+canvas.addEventListener('touchstart', e=>{
+  e.preventDefault();
+  const t = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const x = (t.clientX - rect.left) * (canvas.width / rect.width);
+  if (x < canvas.width/3) touchState.left = true;
+  else if (x > canvas.width*2/3) touchState.right = true;
+  else touchState.jump = true;
+});
+canvas.addEventListener('touchend', e=>{
+  touchState.left = touchState.right = touchState.jump = false;
+});
+
+// Start race button
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  if (raceActive) {
+    endRace();
+  } else {
+    startRace();
+  }
+});
+
+function startRace() {
+  // reset player & counters
+  player.x = 60; player.y = H - 160; player.vx = 0; player.vy = 0;
+  lapCount = 0; splits = []; raceActive = true; countdown = 3.0;
+  document.getElementById('startBtn').textContent = 'Abort Race';
+  document.getElementById('nextCp').textContent = '1';
+  document.getElementById('splitsList').textContent = '—';
+  document.getElementById('lapDisplay').textContent = lapCount;
+  // check order index
+  raceState.nextCheckpoint = 0;
+  raceState.lastCrossTime = null;
+}
+
+function endRace() {
+  raceActive = false;
+  raceStartTime = 0;
+  countdown = 0;
+  document.getElementById('startBtn').textContent = 'Start Race';
+}
+
+// Race helper state
+const raceState = {
+  nextCheckpoint: 0,
+  lastCrossTime: null
+};
+
+// Collision detection AABB
+function aabb(a,b){
+  return !(a.x + a.w < b.x || a.x > b.x + b.w || a.y + a.h < b.y || a.y > b.y + b.h);
+}
+
+// Platform collision resolution (simple)
+function resolvePlatformCollisions(dt) {
+  player.grounded = false;
+  for (const p of level.platforms) {
+    const plat = {x:p.x, y:p.y, w:p.w, h:p.h};
+    if (aabb(player, plat)) {
+      // from top?
+      const playerBottomPrev = player.y + player.h - player.vy*dt;
+      const platTop = plat.y;
+      if (playerBottomPrev <= platTop + 6 && player.vy >=0) {
+        // place on top
+        player.y = plat.y - player.h;
+        player.vy = 0;
+        player.grounded = true;
+      } else {
+        // simple horizontal correction
+        if (player.x + player.w/2 < plat.x + plat.w/2) {
+          player.x = plat.x - player.w - 0.1;
+          player.vx *= 0.2;
+        } else {
+          player.x = plat.x + plat.w + 0.1;
+          player.vx *= 0.2;
         }
       }
+    }
+  }
 
-      // finish line
-      if (ostrich.x > 750 && !raceFinished) {
-        raceFinished = true;
-        document.getElementById('saveBtn').style.display = 'block';
+  // Bounce pads (trigger when landing from above onto pad bounds)
+  for (const pad of level.pads) {
+    const padBox = {x:pad.x, y:pad.y, w:pad.w, h:pad.h};
+    if (aabb(player, padBox)) {
+      const prevBottom = player.y + player.h - player.vy*dt;
+      if (prevBottom <= pad.y + 6 && player.vy >= 0) {
+        // landed on pad — apply bounce
+        player.y = pad.y - player.h;
+        player.vy = -pad.bounce;
+        player.grounded = false;
+        // small forward boost
+        player.vx += 40 * player.facing;
       }
     }
+  }
+}
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // track and pads
-      ctx.fillStyle = '#6c3';
-      ctx.fillRect(0, 380, 800, 20);
-
-      ctx.fillStyle = '#f33';
-      pads.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
-
-      // ostrich
-      ctx.fillStyle = '#333';
-      ctx.fillRect(ostrich.x, ostrich.y, ostrich.width, ostrich.height);
-
-      // finish line
-      ctx.fillStyle = '#000';
-      ctx.fillRect(770, 300, 10, 80);
-
-      if (raceFinished) {
-        ctx.font = '24px sans-serif';
-        ctx.fillStyle = '#000';
-        ctx.fillText(`Finished in ${totalTime.toFixed(2)}s!`, 300, 150);
+// Checkpoints for lap counting
+function checkCheckpoints() {
+  if (!raceActive || countdown > 0) return;
+  const cps = level.checkpoints;
+  const idx = raceState.nextCheckpoint;
+  const cp = cps[idx];
+  const cpBox = {x:cp.x, y:cp.y, w:cp.w, h:cp.h};
+  if (aabb(player, cpBox)) {
+    // crossed in order
+    const t = (performance.now() - raceStartTime)/1000;
+    raceState.nextCheckpoint = (idx + 1) % cps.length;
+    document.getElementById('nextCp').textContent = raceState.nextCheckpoint + 1;
+    // if we wrapped to 0, completed a lap
+    if (raceState.nextCheckpoint === 0) {
+      lapCount++;
+      document.getElementById('lapDisplay').textContent = lapCount;
+      const lapTime = (raceState.lastCrossTime==null) ? t : t - raceState.lastCrossTime;
+      raceState.lastCrossTime = t;
+      splits.push(lapTime);
+      updateSplitsUI();
+      if (lapCount >= LAP_TARGET) {
+        // finished race
+        finishRace(t);
       }
     }
+  }
+}
 
-    function loop() {
-      if (gameStarted) {
-        update();
-        draw();
-      }
-      requestAnimationFrame(loop);
+function updateSplitsUI(){
+  const el = document.getElementById('splitsList');
+  el.innerHTML = '';
+  splits.forEach((s,i)=>{
+    const div = document.createElement('div');
+    div.textContent = `Lap ${i+1}: ${s.toFixed(2)}s`;
+    el.appendChild(div);
+  });
+}
+
+// Finish race
+function finishRace(total) {
+  raceActive = false;
+  document.getElementById('startBtn').textContent = 'Start Race';
+  const totalTime = total;
+  if (!bestTime || totalTime < bestTime) {
+    bestTime = totalTime;
+    localStorage.setItem('ostr_best', bestTime.toString());
+    document.getElementById('bestDisplay').textContent = bestTime.toFixed(2)+'s';
+    alert(`New BEST! ${totalTime.toFixed(2)}s`);
+  } else {
+    alert(`Race finished in ${totalTime.toFixed(2)}s`);
+  }
+}
+
+// Main update loop
+function update(dt) {
+  // Input -> horizontal acceleration
+  let left = keys['ArrowLeft'] || keys['KeyA'] || touchState.left;
+  let right = keys['ArrowRight'] || keys['KeyD'] || touchState.right;
+  let jumpPressed = keys['Space'] || keys['KeyZ'] || touchState.jump;
+
+  // Horizontal movement
+  if (left && !right) {
+    player.vx -= MOVE_ACCEL * dt;
+    player.facing = -1;
+  } else if (right && !left) {
+    player.vx += MOVE_ACCEL * dt;
+    player.facing = 1;
+  } else {
+    // Apply ground friction
+    player.vx *= Math.pow(FRICTION, dt*60);
+  }
+  player.vx = clamp(player.vx, -MAX_RUN_SPEED, MAX_RUN_SPEED);
+
+  // Jumping
+  if (jumpPressed) {
+    // single jump if grounded
+    if (player.grounded) {
+      player.vy = -JUMP_V;
+      player.grounded = false;
     }
+  }
 
-    document.addEventListener('keydown', e => {
-      keys[e.key] = true;
-      if (e.key === ' ' && ostrich.onGround && gameStarted) {
-        ostrich.vy = -10;
-        ostrich.onGround = false;
-      }
-    });
+  // Gravity
+  player.vy += GRAVITY * dt;
 
-    document.addEventListener('keyup', e => keys[e.key] = false);
+  // Integrate movement
+  player.x += player.vx * dt;
+  player.y += player.vy * dt;
 
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      const snapshotCanvas = document.createElement('canvas');
-      snapshotCanvas.width = 200;
-      snapshotCanvas.height = 200;
-      const sctx = snapshotCanvas.getContext('2d');
-      sctx.fillStyle = '#aef';
-      sctx.fillRect(0, 0, 200, 200);
-      sctx.drawImage(canvas, ostrich.x - 100, ostrich.y - 100, 200, 200, 0, 0, 200, 200);
-      sctx.font = '16px sans-serif';
-      sctx.fillStyle = '#000';
-      sctx.fillText(`Time: ${totalTime.toFixed(2)}s`, 10, 190);
+  // Collision resolution
+  resolvePlatformCollisions(dt);
 
-      const link = document.createElement('a');
-      link.download = 'runaway_ostrich_snapshot.png';
-      link.href = snapshotCanvas.toDataURL();
-      link.click();
-    });
+  // Keep within level bounds
+  player.x = clamp(player.x, -100, level.width - player.w + 100);
 
-    startBtnMenu.addEventListener('click', () => {
-      menu.style.display = 'none';
-      document.getElementById('saveBtn').style.display = 'none';
-      gameStarted = true;
-      resetRace();
-    });
+  // Camera follows player
+  camera.x = clamp(player.x + player.w/2 - W/2, 0, level.width - W);
 
-    loop();
-  </script>
+  // If race countdown running
+  if (raceActive && countdown > 0) {
+    countdown -= dt;
+    if (countdown <= 0) {
+      // start timer
+      raceStartTime = performance.now();
+      raceState.lastCrossTime = null;
+      document.getElementById('timeDisplay').textContent = '0.00';
+    }
+  }
+
+  // Race timer update
+  if (raceActive && countdown <= 0) {
+    currentTime = (performance.now() - raceStartTime)/1000;
+    document.getElementById('timeDisplay').textContent = currentTime.toFixed(2);
+  }
+
+  // Checkpoint logic
+  checkCheckpoints();
+}
+
+// Draw functions
+function drawGrid() {
+  ctx.save();
+  // distant parallax sky / clouds as simple bands
+  ctx.fillStyle = '#cfefff';
+  ctx.fillRect(0, 0, W, H*0.33);
+  ctx.restore();
+}
+function drawLevel() {
+  // ground and platforms
+  for (const p of level.platforms) {
+    const sx = p.x - camera.x;
+    const sy = p.y - camera.y;
+    ctx.fillStyle = '#3c763d';
+    roundedRect(ctx, sx, sy, p.w, p.h, 6);
+    ctx.fill();
+    // top edge
+    ctx.fillStyle = '#2f5c31';
+    ctx.fillRect(sx, sy, p.w, 6);
+  }
+
+  // pads
+  for (const pad of level.pads) {
+    const sx = pad.x - camera.x;
+    const sy = pad.y - camera.y;
+    // pad base
+    roundedRect(ctx, sx, sy, pad.w, pad.h, 6);
+    gradientRounded(ctx, sx, sy, pad.w, pad.h, '#ff5a3c', '#c03222');
+    // little bounce lines
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(sx+6, sy+pad.h/2);
+    ctx.lineTo(sx+pad.w-6, sy+pad.h/2);
+    ctx.stroke();
+  }
+
+  // checkpoints (for debugging / visual)
+  level.checkpoints.forEach((cp, idx)=>{
+    const sx = cp.x - camera.x;
+    ctx.fillStyle = 'rgba(255, 200, 0, 0.12)';
+    ctx.fillRect(sx, 0, cp.w, H);
+    ctx.fillStyle = 'rgba(255,170,0,0.85)';
+    ctx.fillRect(sx+2, 20, cp.w-4, 36);
+    ctx.fillStyle = '#222';
+    ctx.font = '16px sans-serif';
+    ctx.fillText('CP'+(idx+1), sx+6, 44);
+  });
+}
+
+function drawPlayer() {
+  const sx = player.x - camera.x;
+  const sy = player.y - camera.y;
+
+  // Draw simple stylised ostrich using shapes (no external assets)
+  ctx.save();
+  ctx.translate(sx + player.w/2, sy + player.h/2);
+  if (player.facing < 0) ctx.scale(-1,1);
+
+  // body
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.ellipse(-4, 4, 18, 22, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // wing
+  ctx.fillStyle = '#eee';
+  ctx.beginPath();
+  ctx.ellipse(-12, 0, 8, 12, -0.9, 0, Math.PI*2);
+  ctx.fill();
+
+  // neck
+  ctx.fillStyle = '#ffd39b';
+  ctx.fillRect(6, -22, 8, 24);
+  // head
+  ctx.beginPath();
+  ctx.ellipse(12, -30, 10, 10, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // eye
+  ctx.fillStyle = '#111';
+  ctx.beginPath();
+  ctx.arc(14, -32, 2, 0, Math.PI*2);
+  ctx.fill();
+
+  // beak
+  ctx.fillStyle = '#ffb347';
+  ctx.beginPath();
+  ctx.moveTo(18, -28);
+  ctx.lineTo(24, -26);
+  ctx.lineTo(18, -24);
+  ctx.closePath();
+  ctx.fill();
+
+  // legs (simple)
+  ctx.strokeStyle = '#4b2f1a';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(-2, 20);
+  ctx.lineTo(-2, 34);
+  ctx.moveTo(8, 20);
+  ctx.lineTo(8, 36);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// Basic rounded rect helper
+function roundedRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function gradientRounded(ctx,x,y,w,h, c1, c2){
+  const g = ctx.createLinearGradient(x, y, x, y+h);
+  g.addColorStop(0,c1);
+  g.addColorStop(1,c2);
+  ctx.fillStyle = g;
+  roundedRect(ctx,x,y,w,h,6);
+  ctx.fill();
+}
+
+// Render loop
+function render() {
+  // clear
+  ctx.clearRect(0,0,W,H);
+
+  // parallax background
+  drawBG();
+
+  // level & player
+  drawLevel();
+  drawPlayer();
+
+  // UI overlays on canvas (optional shadows)
+  // small bounce hint arrow
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.fillRect(0,H-2,W,2);
+}
+
+// simple background drawing
+function drawBG() {
+  // sky gradient
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,'#8fd3ff'); sky.addColorStop(0.7,'#c7f0ff'); sky.addColorStop(1,'#dff8ff');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,W,H);
+
+  // sun
+  ctx.beginPath();
+  ctx.fillStyle = '#fff2a8';
+  ctx.arc(80 - camera.x*0.02, 80, 50, 0, Math.PI*2);
+  ctx.fill();
+
+  // Repeating parallax hills
+  for (let i=0;i<6;i++){
+    ctx.fillStyle = i%2? '#bfe6c8' : '#d9f0d3';
+    const px = (i*420 - camera.x*0.2) % (W+440) - 220;
+    ctx.beginPath();
+    ctx.ellipse(px+200, H-140, 420, 180, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // foreground grass strip
+  ctx.fillStyle = '#0f5b2a';
+  ctx.fillRect(0,H-80,W,80);
+}
+
+// main loop
+function loop(timestamp) {
+  let nowMs = timestamp;
+  let dt = Math.min((nowMs - lastTime) / 1000, 0.04);
+  lastTime = nowMs;
+
+  update(dt);
+  render();
+
+  // draw HUD-like countdown overlay
+  if (raceActive && countdown > 0) {
+    const cd = Math.ceil(countdown);
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 80px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(cd, W/2, H/2 + 20);
+    ctx.restore();
+  }
+
+  requestAnimationFrame(loop);
+}
+
+// initialize and start loop
+requestAnimationFrame(ts=>{
+  lastTime = ts;
+  // small intro drop-in
+  gameRunning = true;
+  requestAnimationFrame(loop);
+});
+
+// Utility: show time in HUD even when not racing
+setInterval(()=>{
+  if (!raceActive) {
+    document.getElementById('timeDisplay').textContent = '0.00';
+  } else if (raceActive && countdown > 0) {
+    document.getElementById('timeDisplay').textContent = '—';
+  }
+},250);
+
+// Prevent accidental selection drag
+canvas.onselectstart = ()=>false;
+
+</script>
 </body>
 </html>
