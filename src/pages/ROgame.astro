@@ -5,625 +5,335 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
+
+
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RUNAWAY OSTRICH — Bounce Pad Races</title>
-  <h3>GAMES</h3>
-  				<li>RO: Running Ostrich 🏃‍♂️‍➡️<a href="https://show.sbasp.com/ROgame">link</a></li>
-  				<li>SSP: Squares, Spaces & Pairs ⏹️<a href="https://show.sbasp.com/SSPgame">link</a></li>
-  <h3>NAV</h3>
-  				<li>SHOW: 📚<a href="https://show.sbasp.com">link</a></li>
-  				<li>SHOP: 🔥<a href="https://shop.sbasp.com">link</a></li>
-<style>
-  :root{
-    --bg:#8fd3ff;
-    --ground:#6b3f1f;
-    --platform:#3c763d;
-    --pad:#ff5a3c;
-    --ui:#fff;
-    --accent:#ffc857;
-  }
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-  body{background:linear-gradient(#8fd3ff, #c7f0ff 60%);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;}
-  #gameWrap{width:960px;max-width:100%;background:linear-gradient(#bfe9ff,#ffffff);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.18);overflow:hidden;padding:12px;}
-  canvas{display:block;background:transparent;border-radius:8px;width:100%;height:540px;image-rendering:pixelated;}
-  .hud{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;font-weight:600;color:#223;}
-  .hud .left,.hud .right{display:flex;gap:12px;align-items:center;}
-  .btn{background:var(--accent);border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:700;}
-  .small{font-size:13px;opacity:0.95}
-  .controls{margin-top:8px;display:flex;gap:8px;justify-content:center;font-size:13px;color:#123;}
-  .note{font-size:13px;color:#123;opacity:0.9}
-  .splits{font-size:13px;color:#123;display:flex;flex-direction:column;gap:2px;min-width:220px;}
-  .checkpoint{padding:4px 6px;background:rgba(255,255,255,0.6);border-radius:6px}
-</style>
+  <h3>GAMES</h3><br>
+  				<li>RO: Running Ostrich 🏃‍♂️‍➡️<a href="https://show.sbasp.com/ROgame">link</a></li><br>
+  				<li>SSP: Squares, Spaces & Pairs ⏹️<a href="https://show.sbasp.com/SSPgame">link</a></li><br>
+  <h3>NAV</h3><br>
+  				<li>SHOW: 📚<a href="https://show.sbasp.com">link</a></li><br>
+  				<li>SHOP: 🔥<a href="https://shop.sbasp.com">link</a></li><br>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <title>Runaway Ostrich — games.SBASP</title>
+  <style>
+    /* Mobile-first responsive canvas layout */
+    html,body{height:100%;margin:0;background:#8ecae6;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
+    .wrap{display:flex;flex-direction:column;height:100%;align-items:center;justify-content:flex-start;padding:8px;box-sizing:border-box}
+    header{width:100%;max-width:900px;color:#023047;padding:6px 8px;font-weight:700}
+    canvas{background:linear-gradient(#cbeefc,#8ecae6);border-radius:12px;touch-action:none}
+    .hud{display:flex;gap:8px;align-items:center;justify-content:space-between;width:100%;max-width:900px;margin-top:8px}
+    .panel{background:rgba(255,255,255,0.85);padding:6px 8px;border-radius:8px;box-shadow:0 6px 18px rgba(2,48,71,0.12)}
+    .controls{display:flex;gap:10px;align-items:center}
+    .btn{background:#ffb703;border-radius:10px;padding:8px 12px;font-weight:700;user-select:none}
+    /* touch controls docked at bottom for mobile */
+    .touch-controls{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:center;pointer-events:none}
+    .touch-row{width:100%;max-width:900px;display:flex;justify-content:space-between;pointer-events:auto;padding:0 12px}
+    .touch-pad{background:rgba(2,48,71,0.9);color:white;border-radius:12px;padding:14px 18px;font-weight:800;opacity:0.9}
+    .touch-pad.small{padding:12px 14px;border-radius:10px}
+    .info{font-size:14px}
+    @media(min-width:900px){.touch-controls{display:none}}
+  </style>
 </head>
-<body>  
-<div id="gameWrap">
-  <div class="hud">
-    <div class="left">
-      <div><strong>Runaway Ostrich</strong></div>
-      <div class="small">Use ← → to run • Z / Space to jump</div>
-    </div>
-    <div class="right">
-      <div class="small">Lap: <span id="lapDisplay">0</span>/<span id="lapTotal">3</span></div>
-      <div class="small">Time: <span id="timeDisplay">0.00</span>s</div>
-      <div class="small">Best: <span id="bestDisplay">—</span></div>
-      <button id="startBtn" class="btn">Start Race</button>
-    </div>
-  </div>
+<body>
+  <div class="wrap">
+    <header>
+      Runaway Ostrich — Bounce-pad farm races
+    </header>
 
-  <canvas id="game" width="960" height="540"></canvas>
+    <canvas id="game" width="900" height="600"></canvas>
 
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-    <div class="controls note">Goal: Complete <strong id="lapTotal2">3</strong> laps. Bounce pads give big jumps. Hit checkpoints in order.</div>
-    <div class="splits">
-      <div class="checkpoint">Next checkpoint: <span id="nextCp">1</span></div>
-      <div class="checkpoint">Lap splits:
-        <div id="splitsList" style="margin-top:6px;font-weight:600">—</div>
+    <div class="hud" role="region" aria-label="game HUD">
+      <div class="panel info">
+        <div>Time: <span id="timer">0.00</span>s</div>
+        <div>Lap: <span id="lap">0</span>/<span id="lapsTotal">3</span></div>
+      </div>
+      <div class="panel controls">
+        <div class="btn" id="startBtn">Start Race</div>
+        <div class="btn" id="resetBtn">Reset</div>
+      </div>
+      <div class="panel info">
+        <div>Best: <span id="best">—</span>s</div>
+      </div>
+    </div>
+
+    <div class="touch-controls">
+      <div class="touch-row">
+        <div style="display:flex;gap:8px;">
+          <div class="touch-pad" id="leftBtn">◀</div>
+          <div class="touch-pad" id="rightBtn">▶</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div class="touch-pad small" id="jumpBtn">JUMP</div>
+          <div class="touch-pad small" id="boostBtn">BOUNCE</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-/* Runaway Ostrich — single-file platformer
-   Controls: Left/Right arrows to move, Space/Z to jump.
-   Race: Start -> countdown -> timer runs; pass checkpoints in order -> complete lap.
-*/
+  <script>
+  // Single-file 2D platformer game: Runaway Ostrich
+  // Features: run/jump/bounce pads, mobile touch controls, timed laps with checkpoints (circuit tracks)
 
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  let W = canvas.width, H = canvas.height;
 
-const W = canvas.width;
-const H = canvas.height;
-
-// Game state
-let keys = {};
-let touchState = {left:false,right:false,jump:false};
-let gameRunning = false;
-let raceActive = false;
-let countdown = 0;
-let raceStartTime = 0;
-let currentTime = 0;
-let lapCount = 0;
-const LAP_TARGET = 3;
-document.getElementById('lapTotal').textContent = LAP_TARGET;
-document.getElementById('lapTotal2').textContent = LAP_TARGET;
-
-let splits = [];
-let bestTime = localStorage.getItem('ostr_best') ? parseFloat(localStorage.getItem('ostr_best')) : null;
-document.getElementById('bestDisplay').textContent = bestTime ? bestTime.toFixed(2)+'s' : '—';
-
-// Physics constants
-const GRAVITY = 1400; // px/s^2
-const FRICTION = 0.85;
-const MOVE_ACCEL = 2600; // px/s^2
-const MAX_RUN_SPEED = 380; // px/s
-const JUMP_V = 600; // initial jump velocity (px/s)
-const BOUNCE_V = 940; // bounce pad velocity
-
-// Time
-let lastTime = performance.now();
-
-// Level layout (platforms, pads, checkpoints) in world coordinates
-const level = {
-  width: 3000,
-  height: H,
-  platforms: [],
-  pads: [],
-  checkpoints: []
-};
-
-// Build a simple circuit-like track of platforms
-function buildLevel() {
-  // ground strip across
-  level.platforms.push({x: -200, y: H - 80, w: level.width + 400, h: 80});
-
-  // Some elevated platforms to make a circuit shape
-  const baseY = H - 180;
-  level.platforms.push({x: 100, y: baseY, w: 280, h: 24});
-  level.platforms.push({x: 500, y: baseY-60, w: 220, h: 24});
-  level.platforms.push({x: 820, y: baseY, w: 260, h: 24});
-  level.platforms.push({x: 1180, y: baseY-50, w: 240, h: 24});
-  level.platforms.push({x: 1500, y: baseY, w: 260, h: 24});
-  level.platforms.push({x: 1860, y: baseY-70, w: 300, h: 24});
-  level.platforms.push({x: 2250, y: baseY, w: 420, h: 24});
-
-  // small stepping stones and gaps
-  for (let i=0;i<12;i++){
-    const x = 300 + i*120;
-    const y = baseY - (i%3===0?110: (i%3===1?60:0));
-    level.platforms.push({x:x,y:y,w:70,h:20});
+  // scale canvas up/down to fit screen while keeping aspect ratio
+  function fitCanvas(){
+    const maxW = Math.min(window.innerWidth-16, 900);
+    const scale = maxW / 900;
+    canvas.style.width = Math.round(900*scale)+'px';
+    canvas.style.height = Math.round(600*scale)+'px';
   }
+  window.addEventListener('resize', fitCanvas);
+  fitCanvas();
 
-  // Bounce pads placed strategically
-  level.pads.push({x: 130, y: baseY - 24 - 18, w: 56, h: 14, bounce: BOUNCE_V});
-  level.pads.push({x: 560, y: baseY-60-18, w: 56, h: 14, bounce: BOUNCE_V});
-  level.pads.push({x: 1100, y: baseY-50-18, w: 56, h: 14, bounce: BOUNCE_V});
-  level.pads.push({x: 1900, y: baseY-70-18, w: 56, h: 14, bounce: BOUNCE_V});
-  level.pads.push({x: 2500, y: baseY-24-18, w: 80, h: 16, bounce: BOUNCE_V});
+  // HUD
+  const timerEl = document.getElementById('timer');
+  const lapEl = document.getElementById('lap');
+  const lapsTotalEl = document.getElementById('lapsTotal');
+  const bestEl = document.getElementById('best');
 
-  // Checkpoints (ordered). Use vertical rectangles adjacent to track.
-  const cps = [
-    {x: 90, w: 10, name: 'Start'},
-    {x: 760, w: 10, name: 'CP1'},
-    {x: 1400, w: 10, name: 'CP2'},
-    {x: 2190, w: 10, name: 'CP3'}
-  ];
-  cps.forEach(cp=>{
-    level.checkpoints.push({x:cp.x,y:0,w:cp.w,h:H, name:cp.name});
+  // Controls (keyboard & touch)
+  const keys = {left:false,right:false,jump:false,bounce:false};
+  window.addEventListener('keydown', e=>{ if(e.key==='ArrowLeft') keys.left=true; if(e.key==='ArrowRight') keys.right=true; if(e.key===' '||e.key==='ArrowUp') keys.jump=true; if(e.key==='b') keys.bounce=true; });
+  window.addEventListener('keyup', e=>{ if(e.key==='ArrowLeft') keys.left=false; if(e.key==='ArrowRight') keys.right=false; if(e.key===' '||e.key==='ArrowUp') keys.jump=false; if(e.key==='b') keys.bounce=false; });
+
+  // touch buttons
+  ['leftBtn','rightBtn','jumpBtn','boostBtn'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('touchstart', e=>{ e.preventDefault(); el.classList.add('active'); if(id==='leftBtn') keys.left=true; if(id==='rightBtn') keys.right=true; if(id==='jumpBtn') keys.jump=true; if(id==='boostBtn') keys.bounce=true; });
+    el.addEventListener('touchend', e=>{ e.preventDefault(); el.classList.remove('active'); if(id==='leftBtn') keys.left=false; if(id==='rightBtn') keys.right=false; if(id==='jumpBtn') keys.jump=false; if(id==='boostBtn') keys.bounce=false; });
+    // mouse fallback
+    el.addEventListener('mousedown', e=>{ e.preventDefault(); if(id==='leftBtn') keys.left=true; if(id==='rightBtn') keys.right=true; if(id==='jumpBtn') keys.jump=true; if(id==='boostBtn') keys.bounce=true; });
+    el.addEventListener('mouseup', e=>{ e.preventDefault(); if(id==='leftBtn') keys.left=false; if(id==='rightBtn') keys.right=false; if(id==='jumpBtn') keys.jump=false; if(id==='boostBtn') keys.bounce=false; });
   });
-}
-buildLevel();
 
-// Player (Runaway Ostrich)
-const player = {
-  x: 60,
-  y: H - 160,
-  w: 42,
-  h: 48,
-  vx: 0,
-  vy: 0,
-  grounded: false,
-  facing: 1,
-  color: '#fff',
-  stride: 0
-};
+  // Start/Reset
+  document.getElementById('startBtn').addEventListener('click', ()=>{ if(!race.started) startRace(); });
+  document.getElementById('resetBtn').addEventListener('click', resetGame);
 
-// Camera
-const camera = {x:0,y:0,w:W,h:H};
+  // World data
+  const gravity = 0.9;
+  const groundY = 520; // baseline
 
-// Helpers
-function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
-function now(){return performance.now()/1000;}
+  // simple tile-like platforms and bounce pads
+  const platforms = [
+    {x:0,y:groundY,w:900,h:80},
+    {x:120,y:420,w:250,h:16},
+    {x:420,y:340,w:220,h:16},
+    {x:720,y:300,w:160,h:16},
+    {x:560,y:200,w:160,h:16}
+  ];
 
-// Input
-window.addEventListener('keydown',e=>{
-  keys[e.code] = true;
-  if (e.code === 'Space' || e.key === 'z' || e.key === 'Z') e.preventDefault();
-});
-window.addEventListener('keyup',e=>{
-  keys[e.code] = false;
-});
+  // bounce pads placed on certain platform segments
+  const bouncePads = [
+    {x:260,y:420-16,w:40,h:10,strength: -18},
+    {x:490,y:340-16,w:40,h:10,strength: -20},
+    {x:780,y:300-16,w:40,h:10,strength: -24}
+  ];
 
-// Basic touch controls for mobile — left/right/jump zones
-canvas.addEventListener('touchstart', e=>{
-  e.preventDefault();
-  const t = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  const x = (t.clientX - rect.left) * (canvas.width / rect.width);
-  if (x < canvas.width/3) touchState.left = true;
-  else if (x > canvas.width*2/3) touchState.right = true;
-  else touchState.jump = true;
-});
-canvas.addEventListener('touchend', e=>{
-  touchState.left = touchState.right = touchState.jump = false;
-});
+  // circuit checkpoints in order (x positions) to form laps
+  const checkpoints = [100, 400, 700, 850];
+  let lapsTotal = 3;
+  lapsTotalEl.textContent = lapsTotal;
 
-// Start race button
-document.getElementById('startBtn').addEventListener('click', ()=>{
-  if (raceActive) {
-    endRace();
-  } else {
-    startRace();
+  // Player
+  const player = {
+    x:40,y:groundY-56,w:44,h:56,vx:0,vy:0,onGround:false,facing:1,
+    color:'#ff7b00',name:'Ostrich'
+  };
+
+  // Race state
+  const race = {started:false,startTime:0,elapsed:0,lap:0,nextCheckpoint:0,finished:false,best: null};
+
+  function startRace(){
+    race.started=true;race.startTime=performance.now();race.elapsed=0;race.lap=0;race.nextCheckpoint=0;race.finished=false;
+    lapEl.textContent = race.lap;
   }
-});
 
-function startRace() {
-  // reset player & counters
-  player.x = 60; player.y = H - 160; player.vx = 0; player.vy = 0;
-  lapCount = 0; splits = []; raceActive = true; countdown = 3.0;
-  document.getElementById('startBtn').textContent = 'Abort Race';
-  document.getElementById('nextCp').textContent = '1';
-  document.getElementById('splitsList').textContent = '—';
-  document.getElementById('lapDisplay').textContent = lapCount;
-  // check order index
-  raceState.nextCheckpoint = 0;
-  raceState.lastCrossTime = null;
-}
+  function resetGame(){
+    race.started=false;race.elapsed=0;race.lap=0;race.nextCheckpoint=0;race.finished=false;player.x=40;player.y=groundY-56;player.vx=0;player.vy=0;timerEl.textContent='0.00';lapEl.textContent='0';
+  }
 
-function endRace() {
-  raceActive = false;
-  raceStartTime = 0;
-  countdown = 0;
-  document.getElementById('startBtn').textContent = 'Start Race';
-}
+  // Simple AABB collision
+  function rectsIntersect(a,b){
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
 
-// Race helper state
-const raceState = {
-  nextCheckpoint: 0,
-  lastCrossTime: null
-};
+  // update loop
+  let last = performance.now();
+  function loop(now){
+    const dt = Math.min(40, now - last); last = now;
+    update(dt/16.6667);
+    render();
+    requestAnimationFrame(loop);
+  }
 
-// Collision detection AABB
-function aabb(a,b){
-  return !(a.x + a.w < b.x || a.x > b.x + b.w || a.y + a.h < b.y || a.y > b.y + b.h);
-}
+  function update(t){
+    // physics & input
+    const accel = 0.7;
+    if(keys.left){ player.vx = Math.max(player.vx - accel, -6); player.facing=-1; }
+    else if(keys.right){ player.vx = Math.min(player.vx + accel, 6); player.facing=1; }
+    else { player.vx *= 0.85; if(Math.abs(player.vx)<0.1) player.vx=0; }
 
-// Platform collision resolution (simple)
-function resolvePlatformCollisions(dt) {
-  player.grounded = false;
-  for (const p of level.platforms) {
-    const plat = {x:p.x, y:p.y, w:p.w, h:p.h};
-    if (aabb(player, plat)) {
-      // from top?
-      const playerBottomPrev = player.y + player.h - player.vy*dt;
-      const platTop = plat.y;
-      if (playerBottomPrev <= platTop + 6 && player.vy >=0) {
-        // place on top
-        player.y = plat.y - player.h;
-        player.vy = 0;
-        player.grounded = true;
-      } else {
-        // simple horizontal correction
-        if (player.x + player.w/2 < plat.x + plat.w/2) {
-          player.x = plat.x - player.w - 0.1;
-          player.vx *= 0.2;
-        } else {
-          player.x = plat.x + plat.w + 0.1;
-          player.vx *= 0.2;
+    // apply gravity
+    player.vy += gravity * (t);
+    // jump if on ground and pressed
+    if(keys.jump && player.onGround){ player.vy = -14; player.onGround = false; }
+
+    // bounce pad manual boost (player requests) - short-range
+    if(keys.bounce){
+      // if player overlaps a bounce pad horizontally, trigger
+      for(const bp of bouncePads){
+        if(player.x + player.w > bp.x && player.x < bp.x + bp.w && Math.abs((player.y+player.h) - bp.y) < 80){
+          player.vy = bp.strength; // negative value
+        }
+      }
+    }
+
+    // integrate
+    player.x += player.vx * t;
+    player.y += player.vy * t;
+
+    // world collision with platforms
+    player.onGround = false;
+    for(const p of platforms){
+      const platformRect = {x:p.x, y:p.y, w:p.w, h:p.h};
+      const playerRect = {x:player.x, y:player.y, w:player.w, h:player.h};
+      // simple vertical collision check
+      if(player.vy >= 0 && player.x + player.w > p.x && player.x < p.x + p.w){
+        const playerBottom = player.y + player.h;
+        if(playerBottom > p.y && playerBottom < p.y + 40){
+          // land on platform
+          player.y = p.y - player.h; player.vy = 0; player.onGround = true;
+        }
+      }
+    }
+
+    // bounce pads collision: if player lands on pad from above, trigger bounce
+    for(const bp of bouncePads){
+      const pad = {x:bp.x, y:bp.y, w:bp.w, h:bp.h};
+      const playerBottom = player.y + player.h;
+      if(playerBottom > pad.y && playerBottom - player.vy <= pad.y && player.x + player.w > pad.x && player.x < pad.x + pad.w){
+        // landed on pad
+        player.y = pad.y - player.h; player.vy = bp.strength; player.onGround = false; // strong upwards
+      }
+    }
+
+    // bounds
+    if(player.y > H + 200){ // fell
+      // respawn at last checkpoint or start
+      player.x = 40; player.y = groundY - player.h; player.vx = 0; player.vy = 0;
+    }
+
+    // racing: check checkpoints in order (based on x position only)
+    if(race.started && !race.finished){
+      race.elapsed = (performance.now() - race.startTime)/1000;
+      timerEl.textContent = race.elapsed.toFixed(2);
+      const cpX = checkpoints[race.nextCheckpoint];
+      if(player.x + player.w/2 >= cpX){
+        // hit checkpoint
+        race.nextCheckpoint++;
+        if(race.nextCheckpoint >= checkpoints.length){
+          // completed a lap
+          race.lap++;
+          race.nextCheckpoint = 0;
+          lapEl.textContent = race.lap;
+          if(race.lap >= lapsTotal){
+            race.finished = true;
+            race.started = false;
+            // record best
+            if(race.best === null || race.elapsed < race.best){ race.best = race.elapsed; bestEl.textContent = race.best.toFixed(2); }
+            alert('Lap complete! Time: ' + race.elapsed.toFixed(2) + 's');
+          }
         }
       }
     }
   }
 
-  // Bounce pads (trigger when landing from above onto pad bounds)
-  for (const pad of level.pads) {
-    const padBox = {x:pad.x, y:pad.y, w:pad.w, h:pad.h};
-    if (aabb(player, padBox)) {
-      const prevBottom = player.y + player.h - player.vy*dt;
-      if (prevBottom <= pad.y + 6 && player.vy >= 0) {
-        // landed on pad — apply bounce
-        player.y = pad.y - player.h;
-        player.vy = -pad.bounce;
-        player.grounded = false;
-        // small forward boost
-        player.vx += 40 * player.facing;
-      }
-    }
-  }
-}
+  // render
+  function render(){
+    ctx.clearRect(0,0,W,H);
 
-// Checkpoints for lap counting
-function checkCheckpoints() {
-  if (!raceActive || countdown > 0) return;
-  const cps = level.checkpoints;
-  const idx = raceState.nextCheckpoint;
-  const cp = cps[idx];
-  const cpBox = {x:cp.x, y:cp.y, w:cp.w, h:cp.h};
-  if (aabb(player, cpBox)) {
-    // crossed in order
-    const t = (performance.now() - raceStartTime)/1000;
-    raceState.nextCheckpoint = (idx + 1) % cps.length;
-    document.getElementById('nextCp').textContent = raceState.nextCheckpoint + 1;
-    // if we wrapped to 0, completed a lap
-    if (raceState.nextCheckpoint === 0) {
-      lapCount++;
-      document.getElementById('lapDisplay').textContent = lapCount;
-      const lapTime = (raceState.lastCrossTime==null) ? t : t - raceState.lastCrossTime;
-      raceState.lastCrossTime = t;
-      splits.push(lapTime);
-      updateSplitsUI();
-      if (lapCount >= LAP_TARGET) {
-        // finished race
-        finishRace(t);
-      }
-    }
-  }
-}
-
-function updateSplitsUI(){
-  const el = document.getElementById('splitsList');
-  el.innerHTML = '';
-  splits.forEach((s,i)=>{
-    const div = document.createElement('div');
-    div.textContent = `Lap ${i+1}: ${s.toFixed(2)}s`;
-    el.appendChild(div);
-  });
-}
-
-// Finish race
-function finishRace(total) {
-  raceActive = false;
-  document.getElementById('startBtn').textContent = 'Start Race';
-  const totalTime = total;
-  if (!bestTime || totalTime < bestTime) {
-    bestTime = totalTime;
-    localStorage.setItem('ostr_best', bestTime.toString());
-    document.getElementById('bestDisplay').textContent = bestTime.toFixed(2)+'s';
-    alert(`New BEST! ${totalTime.toFixed(2)}s`);
-  } else {
-    alert(`Race finished in ${totalTime.toFixed(2)}s`);
-  }
-}
-
-// Main update loop
-function update(dt) {
-  // Input -> horizontal acceleration
-  let left = keys['ArrowLeft'] || keys['KeyA'] || touchState.left;
-  let right = keys['ArrowRight'] || keys['KeyD'] || touchState.right;
-  let jumpPressed = keys['Space'] || keys['KeyZ'] || touchState.jump;
-
-  // Horizontal movement
-  if (left && !right) {
-    player.vx -= MOVE_ACCEL * dt;
-    player.facing = -1;
-  } else if (right && !left) {
-    player.vx += MOVE_ACCEL * dt;
-    player.facing = 1;
-  } else {
-    // Apply ground friction
-    player.vx *= Math.pow(FRICTION, dt*60);
-  }
-  player.vx = clamp(player.vx, -MAX_RUN_SPEED, MAX_RUN_SPEED);
-
-  // Jumping
-  if (jumpPressed) {
-    // single jump if grounded
-    if (player.grounded) {
-      player.vy = -JUMP_V;
-      player.grounded = false;
-    }
-  }
-
-  // Gravity
-  player.vy += GRAVITY * dt;
-
-  // Integrate movement
-  player.x += player.vx * dt;
-  player.y += player.vy * dt;
-
-  // Collision resolution
-  resolvePlatformCollisions(dt);
-
-  // Keep within level bounds
-  player.x = clamp(player.x, -100, level.width - player.w + 100);
-
-  // Camera follows player
-  camera.x = clamp(player.x + player.w/2 - W/2, 0, level.width - W);
-
-  // If race countdown running
-  if (raceActive && countdown > 0) {
-    countdown -= dt;
-    if (countdown <= 0) {
-      // start timer
-      raceStartTime = performance.now();
-      raceState.lastCrossTime = null;
-      document.getElementById('timeDisplay').textContent = '0.00';
-    }
-  }
-
-  // Race timer update
-  if (raceActive && countdown <= 0) {
-    currentTime = (performance.now() - raceStartTime)/1000;
-    document.getElementById('timeDisplay').textContent = currentTime.toFixed(2);
-  }
-
-  // Checkpoint logic
-  checkCheckpoints();
-}
-
-// Draw functions
-function drawGrid() {
-  ctx.save();
-  // distant parallax sky / clouds as simple bands
-  ctx.fillStyle = '#cfefff';
-  ctx.fillRect(0, 0, W, H*0.33);
-  ctx.restore();
-}
-function drawLevel() {
-  // ground and platforms
-  for (const p of level.platforms) {
-    const sx = p.x - camera.x;
-    const sy = p.y - camera.y;
-    ctx.fillStyle = '#3c763d';
-    roundedRect(ctx, sx, sy, p.w, p.h, 6);
-    ctx.fill();
-    // top edge
-    ctx.fillStyle = '#2f5c31';
-    ctx.fillRect(sx, sy, p.w, 6);
-  }
-
-  // pads
-  for (const pad of level.pads) {
-    const sx = pad.x - camera.x;
-    const sy = pad.y - camera.y;
-    // pad base
-    roundedRect(ctx, sx, sy, pad.w, pad.h, 6);
-    gradientRounded(ctx, sx, sy, pad.w, pad.h, '#ff5a3c', '#c03222');
-    // little bounce lines
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(sx+6, sy+pad.h/2);
-    ctx.lineTo(sx+pad.w-6, sy+pad.h/2);
-    ctx.stroke();
-  }
-
-  // checkpoints (for debugging / visual)
-  level.checkpoints.forEach((cp, idx)=>{
-    const sx = cp.x - camera.x;
-    ctx.fillStyle = 'rgba(255, 200, 0, 0.12)';
-    ctx.fillRect(sx, 0, cp.w, H);
-    ctx.fillStyle = 'rgba(255,170,0,0.85)';
-    ctx.fillRect(sx+2, 20, cp.w-4, 36);
-    ctx.fillStyle = '#222';
-    ctx.font = '16px sans-serif';
-    ctx.fillText('CP'+(idx+1), sx+6, 44);
-  });
-}
-
-function drawPlayer() {
-  const sx = player.x - camera.x;
-  const sy = player.y - camera.y;
-
-  // Draw simple stylised ostrich using shapes (no external assets)
-  ctx.save();
-  ctx.translate(sx + player.w/2, sy + player.h/2);
-  if (player.facing < 0) ctx.scale(-1,1);
-
-  // body
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.ellipse(-4, 4, 18, 22, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // wing
-  ctx.fillStyle = '#eee';
-  ctx.beginPath();
-  ctx.ellipse(-12, 0, 8, 12, -0.9, 0, Math.PI*2);
-  ctx.fill();
-
-  // neck
-  ctx.fillStyle = '#ffd39b';
-  ctx.fillRect(6, -22, 8, 24);
-  // head
-  ctx.beginPath();
-  ctx.ellipse(12, -30, 10, 10, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // eye
-  ctx.fillStyle = '#111';
-  ctx.beginPath();
-  ctx.arc(14, -32, 2, 0, Math.PI*2);
-  ctx.fill();
-
-  // beak
-  ctx.fillStyle = '#ffb347';
-  ctx.beginPath();
-  ctx.moveTo(18, -28);
-  ctx.lineTo(24, -26);
-  ctx.lineTo(18, -24);
-  ctx.closePath();
-  ctx.fill();
-
-  // legs (simple)
-  ctx.strokeStyle = '#4b2f1a';
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(-2, 20);
-  ctx.lineTo(-2, 34);
-  ctx.moveTo(8, 20);
-  ctx.lineTo(8, 36);
-  ctx.stroke();
-
-  ctx.restore();
-}
-
-// Basic rounded rect helper
-function roundedRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-function gradientRounded(ctx,x,y,w,h, c1, c2){
-  const g = ctx.createLinearGradient(x, y, x, y+h);
-  g.addColorStop(0,c1);
-  g.addColorStop(1,c2);
-  ctx.fillStyle = g;
-  roundedRect(ctx,x,y,w,h,6);
-  ctx.fill();
-}
-
-// Render loop
-function render() {
-  // clear
-  ctx.clearRect(0,0,W,H);
-
-  // parallax background
-  drawBG();
-
-  // level & player
-  drawLevel();
-  drawPlayer();
-
-  // UI overlays on canvas (optional shadows)
-  // small bounce hint arrow
-  ctx.fillStyle = 'rgba(0,0,0,0.08)';
-  ctx.fillRect(0,H-2,W,2);
-}
-
-// simple background drawing
-function drawBG() {
-  // sky gradient
-  const sky = ctx.createLinearGradient(0,0,0,H);
-  sky.addColorStop(0,'#8fd3ff'); sky.addColorStop(0.7,'#c7f0ff'); sky.addColorStop(1,'#dff8ff');
-  ctx.fillStyle = sky;
-  ctx.fillRect(0,0,W,H);
-
-  // sun
-  ctx.beginPath();
-  ctx.fillStyle = '#fff2a8';
-  ctx.arc(80 - camera.x*0.02, 80, 50, 0, Math.PI*2);
-  ctx.fill();
-
-  // Repeating parallax hills
-  for (let i=0;i<6;i++){
-    ctx.fillStyle = i%2? '#bfe6c8' : '#d9f0d3';
-    const px = (i*420 - camera.x*0.2) % (W+440) - 220;
-    ctx.beginPath();
-    ctx.ellipse(px+200, H-140, 420, 180, 0, 0, Math.PI*2);
-    ctx.fill();
-  }
-
-  // foreground grass strip
-  ctx.fillStyle = '#0f5b2a';
-  ctx.fillRect(0,H-80,W,80);
-}
-
-// main loop
-function loop(timestamp) {
-  let nowMs = timestamp;
-  let dt = Math.min((nowMs - lastTime) / 1000, 0.04);
-  lastTime = nowMs;
-
-  update(dt);
-  render();
-
-  // draw HUD-like countdown overlay
-  if (raceActive && countdown > 0) {
-    const cd = Math.ceil(countdown);
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    // parallax sky
+    ctx.fillStyle = '#bde0fe';
     ctx.fillRect(0,0,W,H);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 80px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(cd, W/2, H/2 + 20);
+
+    // draw platforms
+    for(const p of platforms){
+      ctx.fillStyle = '#6b4f3b';
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+      // grass top
+      ctx.fillStyle = '#2a9d8f';
+      ctx.fillRect(p.x, p.y-8, p.w, 8);
+    }
+
+    // draw bounce pads
+    for(const bp of bouncePads){
+      ctx.fillStyle = '#ff4d6d';
+      ctx.fillRect(bp.x, bp.y - bp.h, bp.w, bp.h);
+      ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.strokeRect(bp.x, bp.y - bp.h, bp.w, bp.h);
+    }
+
+    // draw checkpoints
+    for(let i=0;i<checkpoints.length;i++){
+      const x = checkpoints[i];
+      ctx.fillStyle = i===race.nextCheckpoint? 'rgba(255,195,0,0.95)':'rgba(255,255,255,0.35)';
+      ctx.fillRect(x-4, 120, 8, 320);
+    }
+
+    // draw player (simple ostrich sprite block)
+    ctx.save();
+    // shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.beginPath(); ctx.ellipse(player.x+player.w/2, player.y+player.h+10, player.w*0.6, 8, 0,0,Math.PI*2); ctx.fill();
+
+    // body
+    ctx.fillStyle = player.color;
+    roundRect(ctx, player.x, player.y, player.w, player.h, 8, true, false);
+    // beak
+    ctx.fillStyle = '#ffd166';
+    if(player.facing>0){
+      ctx.beginPath(); ctx.moveTo(player.x+player.w, player.y+14); ctx.lineTo(player.x+player.w+10, player.y+player.h/2); ctx.lineTo(player.x+player.w, player.y+player.h-14); ctx.closePath(); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.moveTo(player.x, player.y+14); ctx.lineTo(player.x-10, player.y+player.h/2); ctx.lineTo(player.x, player.y+player.h-14); ctx.closePath(); ctx.fill();
+    }
+    // eye
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(player.x + (player.facing>0? player.w*0.6:player.w*0.4), player.y+player.h*0.28, 6,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(player.x + (player.facing>0? player.w*0.6:player.w*0.4), player.y+player.h*0.28, 3,0,Math.PI*2); ctx.fill();
     ctx.restore();
+
+    // info text
+    ctx.fillStyle = 'rgba(2,48,71,0.9)'; ctx.font = 'bold 16px system-ui';
+    ctx.fillText('Runaway Ostrich', 12, 28);
+
   }
 
-  requestAnimationFrame(loop);
-}
-
-// initialize and start loop
-requestAnimationFrame(ts=>{
-  lastTime = ts;
-  // small intro drop-in
-  gameRunning = true;
-  requestAnimationFrame(loop);
-});
-
-// Utility: show time in HUD even when not racing
-setInterval(()=>{
-  if (!raceActive) {
-    document.getElementById('timeDisplay').textContent = '0.00';
-  } else if (raceActive && countdown > 0) {
-    document.getElementById('timeDisplay').textContent = '—';
+  // utility: round rect
+  function roundRect(ctx,x,y,w,h,r,fill,stroke){
+    if(typeof r==='undefined') r=5; if(typeof r==='number') r={tl:r,tr:r,br:r,bl:r};
+    ctx.beginPath(); ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr); ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h); ctx.lineTo(x+r.bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl); ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath();
+    if(fill) ctx.fill(); if(stroke) ctx.stroke();
   }
-},250);
 
-// Prevent accidental selection drag
-canvas.onselectstart = ()=>false;
+  // fit internal canvas coordinate size if device pixel ratio high
+  function fixHiDPI(){
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(900 * dpr);
+    canvas.height = Math.round(600 * dpr);
+    W = canvas.width; H = canvas.height; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  fixHiDPI();
 
-</script>
+  // initial draw
+  render();
+  requestAnimationFrame(loop);
+  </script>
 </body>
 </html>
