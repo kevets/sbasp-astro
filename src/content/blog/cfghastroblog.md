@@ -15,10 +15,11 @@ Enter Cloudflare worker pages, ASTRO site framework, and GitHub for serviceable 
 
 Want to customize your HTML and have an iframe embedded in a post Sure!
 ## SBASP SITE CHAT
-  <iframe
+  <iframe>
+    <i>Join #NewsAndGuidance to say hello!</i><br>
     src="https://noagenda.stream/#/chan-5"
     allow="camera; microphone; fullscreen; display-capture"
-  ></iframe>
+  </iframe>
 
 ## ARTICLE SOCIAL PREVIEW
   <iframe
@@ -29,7 +30,8 @@ src="https://primal.net/e/naddr1qvzqqqr4gupzqaf4zg3xgl9xyn8pvjch5gjkd2nhf53ldqzd
   </iframe>
 
 ## **Want to use Markdown?**
-* Sure (https://duckduckgo.com/?q=links+work+here+also&ia=web[link]}
+* Sure! (https://duckduckgo.com/?q=links+work+here+also&ia=web[link])
+* Want to play a (https://show.sbasp.com/SSPgame/[game])?
 
 **STEPS**
 * Create free github account
