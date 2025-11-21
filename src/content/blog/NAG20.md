@@ -54,3 +54,13 @@ November 21, 2025: Top News Summary
 --------------------------------------------------------------------------------
 Proverb of the Day
 "It is an honour for a man to cease from strife: but every fool will be meddling." [8]
+
+######################################
+			<h2>SBASP CHAT</h2>
+<iframe 
+  src="https://sbasp-chat.kevets.workers.dev/uqvG_V_EzmgSnuRbMOPS2"
+width="85%"
+height="400"
+  loading="lazy"
+></iframe>
+######################################
