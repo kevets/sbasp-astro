@@ -2,7 +2,7 @@
 title: "NAG20-11.20.25 - Spotlight: Baltimore"
 description: "This summary, compiled around November 20-21, 2025, offers a multi-faceted snapshot of news across local, national, and technical domains, starting with significant updates in the Baltimore area"
 pubDate: "Nov 21 2025"
-heroImage: "/NAG20.jpg"
+heroImage: "/NAG20.png"
 ---
 
 This summary, compiled around November 20-21, 2025, offers a multi-faceted snapshot of news across local, national, and technical domains, starting with significant updates in the Baltimore area. Key Baltimore stories include the upcoming NTSB vote on the probable cause of the Francis Scott Key Bridge collapse, preliminary findings pointing to electrical failures aboard the cargo ship Dali, and the activation of a Code Blue for extreme cold alongside expanded shelter space, meal distribution, and warming centers. The report also covers a diverse array of global technical and security incidents, such as the drive to lead open-source AI development, various software vulnerabilities, and a Microsoft out-of-band update, while also noting major national headlines like the sentencing of Pras Michel of the Fugees and political tensions surrounding former President Trump.
