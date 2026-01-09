@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import WavlakePodcastPlayer from '../components/WavlakePodcastPlayer.astro';
 ---
 <!doctype html>
 <html lang="en">
@@ -25,6 +26,10 @@ This docu-show serves as a snapshot of a specific day, by compiling a daily news
 				<li>Substack: <a href="https://sbasp.substack.com/s/news-and-guidance-show">link</a></li>
 				<li>Youtube: <a href="https://www.youtube.com/playlist?list=PLAOjFiFd6ovMpyR8vFRinQ4DJrFUgP2Qf">link</a></li>
 			</ul>
+<WavlakePodcastPlayer
+  title="News & Guidance — Powered by Wavlake & SmallBatchSteve"
+  height="400px"
+/>
 			<h2>Upcoming items</h2>
 				<li>NAGSR9 - Green Energy Gut Check <a href="https://primal.net/e/nevent1qqsxwm05dg2j2e4dwt3pxq4u6eud8tz7z0kmv3gayhlashzdpc8xtrc0auvcc">VIDEO</a></li>
 				<li>University of Chicago Press funding and history</li>
