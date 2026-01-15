@@ -65,3 +65,9 @@ Retail Security: Target employees confirmed a source code leak following a lockd
 **Proverb of the Day** "A quick-tempered person does foolish things, and the one who devises evil schemes is hated." — Proverbs 14:17.
 
 Ep Link: https://show.sbasp.com/blog/nag23/
+
+**NAG 1USD UXTO Donation**
+<img src="/nag1usd.jpg">
+
+**NAG 10USD UXTO Donation**
+<img src="/nag10usd.jpg">
