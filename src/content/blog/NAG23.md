@@ -1,6 +1,6 @@
 ---
 
-title: "NAG22-Spotlight: Helsinki, Finland"
+title: "NAG23-Spotlight: Helsinki, Finland"
 
 description: "News and Guidance delivers a comprehensive news digest that synthesizes local Finnish updates with broader global trends in technology, security, and politics."
 
@@ -14,4 +14,4 @@ News and Guidance delivers a comprehensive news digest that synthesizes local Fi
 
 
 
-Ep Link: https://show.sbasp.com/blog/nag22/
+Ep Link: https://show.sbasp.com/blog/nag23/
