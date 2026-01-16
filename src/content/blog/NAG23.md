@@ -67,7 +67,7 @@ Retail Security: Target employees confirmed a source code leak following a lockd
 Ep Link: https://show.sbasp.com/blog/nag23/
 
 **NAG 1USD UXTO Donation**
-<img src="/nag1usd.jpg">
+<img src="/nag1usd.png">
 
 **NAG 10USD UXTO Donation**
-<img src="/nag10usd.jpg">
+<img src="/nag10usd.png">
