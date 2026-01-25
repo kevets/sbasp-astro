@@ -15,6 +15,7 @@ _This document serves as a multifaceted news digest that transitions from hyper-
 
 Spotlight: Minneapolis, MN
 The Minneapolis area is currently facing significant civil unrest and legal challenges following federal immigration enforcement activities.
+
 • Federal agents fatally shot a man during an operation in South Minneapolis, causing a surge in public outcry [1].
 • Safety concerns led the NBA to postpone a game between the Minnesota Timberwolves and Golden State Warriors [1].
 • Approximately 15,000 protesters marched in downtown Minneapolis in sub-zero temperatures demanding that ICE leave the state [1].
@@ -59,6 +60,9 @@ Proverb of the Day
 "My son, fear thou the LORD and the king: and meddle not with them that are given to change." — Proverbs 24:21
 
 Ep Link: https://show.sbasp.com/blog/nag24/
+
+Support:
+Donate for Carl! https://www.givesendgo.com/URaSmartAssCarl
 
 **NAG 1USD UXTO Donation**
 <img src="/nag1usd.png">
