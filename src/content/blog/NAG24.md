@@ -20,6 +20,7 @@ Public Show Notebook: https://notebooklm.google.com/notebook/97498b96-198d-4e8e-
 _Content creators and researchers are welcome to chat with our hosts or add them to your spaces for a current events update!_
 
 ##Spotlight: Minneapolis, MN##
+
 The Minneapolis area is currently facing significant civil unrest and legal challenges following federal immigration enforcement activities.
 
 • Federal agents fatally shot a man during an operation in South Minneapolis, causing a surge in public outcry [1].
