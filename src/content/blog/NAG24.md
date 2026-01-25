@@ -13,6 +13,7 @@ _News and Guidance is a notebookLM collaboration with Steve In Texas/SmallBatchS
 
 _This document serves as a multifaceted news digest that transitions from hyper-local civil unrest to global technological and security developments. The initial focus documents a volatile humanitarian crisis in Minneapolis, characterized by mass protests and legal battles following a fatal encounter with federal immigration agents. The text then shifts toward scientific and digital frontiers, highlighting milestones in space exploration alongside critical software vulnerabilities and the rising hardware demands of artificial intelligence. Finally, the report concludes with a comprehensive security index, detailing state-sponsored cyber warfare and the evolving landscape of digital exploitation._
 
+Episode Link: https://wavlake.com/episode/5f826e35-14eb-4578-a295-fb4b175bea7e
 Spotlight: Minneapolis, MN
 The Minneapolis area is currently facing significant civil unrest and legal challenges following federal immigration enforcement activities.
 
@@ -58,8 +59,6 @@ The cybersecurity landscape features significant exploits, state-sponsored attac
 
 Proverb of the Day
 "My son, fear thou the LORD and the king: and meddle not with them that are given to change." — Proverbs 24:21
-
-Ep Link: https://show.sbasp.com/blog/nag24/
 
 Support:
 Donate for Carl! https://www.givesendgo.com/URaSmartAssCarl
