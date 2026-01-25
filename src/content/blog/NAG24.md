@@ -65,3 +65,11 @@ Ep Link: https://show.sbasp.com/blog/nag24/
 
 **NAG 10USD UXTO Donation**
 <img src="/nag10usd.png">
+
+Sources Used:
+Daily Hacker News - https://news.ycombinator.com/
+National Public Radio daily text feed - https://text.npr.org
+Western Networks Security Alert Index - https://www.westernnetworks.com/index4.php
+Book of Proverbs - Pereira Classics https://storage.googleapis.com/pereiraclassics/Uploads/Free%20eBooks/The-Book-of-Proverbs.pdf
+Book of Psalms - Pereira Classics https://storage.googleapis.com/pereiraclassics/Uploads/Free%20eBooks/The-Book-of-Psalms.pdf
+NLT Study Bible - Tyndale House Publishers https://files.tyndale.com/thpdata/firstChapters/978-1-4964-1665-0.pdf
