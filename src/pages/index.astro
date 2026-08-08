@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import games from '../data/games.json';
+import NostrProfile from '../components/NostrProfile.astro';
 ---
 
 <Layout title="Home">
@@ -43,6 +44,10 @@ import games from '../data/games.json';
         </div>
       </a>
     ))}
+  </div>
+
+<div class="flex justify-center p-6">
+    <NostrProfile />
   </div>
 
   <script>
