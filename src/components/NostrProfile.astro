@@ -1,0 +1,164 @@
+---
+interface Props {
+  npub?: string;
+  relays?: string[];
+}
+
+const { 
+  npub = "npub1w563ygny0jnzfnskfvt6yftx4fm56glkspx4t07j7ccgwy8amn2q6qnsxk",
+  relays = [
+    'wss://relay.damus.io',
+    'wss://nos.lol',
+    'wss://relay.nostr.band',
+    'wss://purplepag.es'
+  ] 
+} = Astro.props;
+---
+
+<div 
+  class="nostr-profile-card max-w-md w-full bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl text-slate-100 font-sans"
+  data-npub={npub}
+  data-relays={JSON.stringify(relays)}
+>
+  <!-- Loading State -->
+  <div class="profile-skeleton animate-pulse flex items-center space-x-4">
+    <div class="rounded-full bg-slate-800 h-14 w-14 shrink-0"></div>
+    <div class="flex-1 space-y-2">
+      <div class="h-4 bg-slate-800 rounded w-3/4"></div>
+      <div class="h-3 bg-slate-800 rounded w-1/2"></div>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content hidden flex-col gap-4">
+    <div class="flex items-center gap-4">
+      <img class="profile-avatar w-14 h-14 rounded-full object-cover border border-slate-700 bg-slate-800 shrink-0" src="" alt="Nostr Avatar" />
+      <div class="flex-1 min-w-0">
+        <h3 class="profile-name font-bold text-lg text-slate-100 truncate">Loading...</h3>
+        <p class="profile-nip05 text-xs text-purple-400 font-mono truncate hidden"></p>
+        <p class="profile-npub-short text-xs text-slate-500 font-mono truncate"></p>
+      </div>
+    </div>
+
+    <p class="profile-about text-sm text-slate-300 leading-relaxed break-words hidden"></p>
+
+    <div class="pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs text-slate-400">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-950/60 text-purple-300 border border-purple-800/50 font-medium">
+        <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 2L2 19h20L12 2zm0 3.8L18.4 17H5.6L12 5.8z"/></svg>
+        Nostr
+      </span>
+      <a class="profile-link text-indigo-400 hover:text-indigo-300 transition-colors hover:underline font-medium" href="#" target="_blank" rel="noopener noreferrer">
+        View Profile →
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Pure JavaScript Bech32 Decoder for npub -> hex conversion
+  const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+  
+  function decodeNpub(npub) {
+    if (!npub.startsWith('npub1')) return null;
+    const data = [];
+    for (let i = 5; i < npub.length; i++) {
+      const idx = CHARSET.indexOf(npub[i]);
+      if (idx === -1) return null;
+      data.push(idx);
+    }
+    // Remove 6-byte checksum
+    const payload = data.slice(0, -6);
+    // Convert 5-bit array to 8-bit array
+    let acc = 0, bits = 0;
+    const bytes = [];
+    for (const value of payload) {
+      acc = (acc << 5) | value;
+      bits += 5;
+      while (bits >= 8) {
+        bits -= 8;
+        bytes.push((acc >> bits) & 0xff);
+      }
+    }
+    return bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function initNostrProfiles() {
+    const cards = document.querySelectorAll('.nostr-profile-card');
+
+    cards.forEach((card) => {
+      const npub = card.getAttribute('data-npub');
+      const relays = JSON.parse(card.getAttribute('data-relays') || '[]');
+
+      if (!npub) return;
+      const hexPubkey = decodeNpub(npub);
+      if (!hexPubkey) return;
+
+      let resolved = false;
+
+      relays.forEach((relayUrl) => {
+        if (resolved) return;
+        try {
+          const ws = new WebSocket(relayUrl);
+          const subId = 'p_' + Math.random().toString(36).substring(2, 7);
+
+          ws.onopen = () => {
+            ws.send(JSON.stringify(["REQ", subId, { kinds: [0], authors: [hexPubkey], limit: 1 }]));
+          };
+
+          ws.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg[0] === 'EVENT' && msg[2] && msg[2].content) {
+              try {
+                const metadata = JSON.parse(msg[2].content);
+                renderProfile(card, npub, metadata);
+                resolved = true;
+                ws.close();
+              } catch (e) {
+                console.error('Error parsing Nostr metadata', e);
+              }
+            }
+          };
+
+          ws.onerror = () => ws.close();
+        } catch (e) {
+          // Fail silently and let other relays handle it
+        }
+      });
+    });
+  }
+
+  function renderProfile(card, npub, meta) {
+    const skeleton = card.querySelector('.profile-skeleton');
+    const content = card.querySelector('.profile-content');
+    const avatar = card.querySelector('.profile-avatar');
+    const name = card.querySelector('.profile-name');
+    const nip05 = card.querySelector('.profile-nip05');
+    const npubShort = card.querySelector('.profile-npub-short');
+    const about = card.querySelector('.profile-about');
+    const link = card.querySelector('.profile-link');
+
+    avatar.src = meta.picture || `https://api.dicebear.com/7.x/identicon/svg?seed=${npub}`;
+    name.textContent = meta.display_name || meta.name || 'Nostr User';
+    
+    if (meta.nip05) {
+      nip05.textContent = meta.nip05;
+      nip05.classList.remove('hidden');
+    }
+
+    npubShort.textContent = `${npub.slice(0, 10)}...${npub.slice(-6)}`;
+
+    if (meta.about) {
+      about.textContent = meta.about;
+      about.classList.remove('hidden');
+    }
+
+    link.href = `https://njump.me/${npub}`;
+
+    skeleton?.classList.add('hidden');
+    content?.classList.remove('hidden');
+    content?.classList.add('flex');
+  }
+
+  initNostrProfiles();
+  document.addEventListener('astro:page-load', initNostrProfiles);
+</script>
