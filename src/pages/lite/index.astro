@@ -1,0 +1,23 @@
+---
+import LiteLayout from '../../layouts/LiteLayout.astro';
+import games from '../../data/games.json';
+---
+
+<LiteLayout title="Games Index">
+  <h1 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Fast Index</h1>
+  <p style="font-size: 0.85rem; color: #888; margin-bottom: 1rem;">Low-bandwidth game launcher.</p>
+
+  <ul>
+    {games.map((game) => (
+      <li>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <a href={`/sbasp-astro/lite/play/${game.id}`} style="font-weight: bold;">
+            {game.title}
+          </a>
+          <span class="badge">{game.category}</span>
+        </div>
+        <p style="font-size: 0.8rem; color: #aaa; margin: 0.25rem 0 0 0;">{game.description}</p>
+      </li>
+    ))}
+  </ul>
+</LiteLayout>
