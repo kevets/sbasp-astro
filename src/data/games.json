@@ -1,0 +1,34 @@
+[
+  {
+    "id": "slope",
+    "title": "Slope",
+    "category": "Arcade",
+    "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80",
+    "iframeUrl": "https://kbhgames.com/game-embed/slope",
+    "description": "Drive a ball down a series of randomized, fast-paced slopes."
+  },
+  {
+    "id": "2048",
+    "title": "2048",
+    "category": "Puzzle",
+    "thumbnail": "https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=400&q=80",
+    "iframeUrl": "https://play2048.co/",
+    "description": "Slide matching numbers together to reach the 2048 tile."
+  },
+  {
+    "id": "retro-bowl",
+    "title": "Retro Bowl",
+    "category": "Sports",
+    "thumbnail": "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400&q=80",
+    "iframeUrl": "https://game316009.konggames.com/game.html",
+    "description": "Classic 8-bit style American football management and gameplay."
+  },
+  {
+    "id": "snake",
+    "title": "Snake Arcade",
+    "category": "Arcade",
+    "thumbnail": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80",
+    "iframeUrl": "https://playsnake.org/",
+    "description": "Guide the snake to eat food and grow longer without crashing."
+  }
+]
