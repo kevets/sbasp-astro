@@ -1,0 +1,24 @@
+---
+import LiteLayout from '../../../layouts/LiteLayout.astro';
+import games from '../../../data/games.json';
+
+export async function getStaticPaths() {
+  return games.map((game) => ({
+    params: { id: game.id },
+    props: { game },
+  }));
+}
+
+const { game } = Astro.props;
+---
+
+<LiteLayout title={game.title}>
+  <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+    <strong>{game.title}</strong>
+    <a href="/sbasp-astro/lite/" style="font-size: 0.85rem;">← Back</a>
+  </div>
+
+  <div class="frame-container">
+    <iframe src={game.iframeUrl} title={game.title} loading="eager"></iframe>
+  </div>
+</LiteLayout>
